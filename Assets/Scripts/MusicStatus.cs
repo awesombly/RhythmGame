@@ -19,6 +19,16 @@ public class MusicStatus : MonoBehaviour
         public int Difficulty;
         public Dictionary< int/*index*/, string/*wave*/ > WaveList;
 
+        public struct NoteInfo
+        {
+            public int WaveIndex;
+            public int LineNumber;
+        }
+        // MainData
+        public Dictionary< int/*noteIndex*/, List< LinkedList< NoteInfo > > > NoteInfoList;
+
+        public static int DividePerNode = 32; // 한 마디를 몇 박자로 나눠 처리할건지
+
         public void SetHeaderInfo( string tag, string data )
         {
             if ( tag == null || data == null )
@@ -68,7 +78,7 @@ public class MusicStatus : MonoBehaviour
 
                 WaveList[ index ] = data;
             }
-            else if ( tag.StartsWith( "#BPM" ) )
+            else if ( tag.StartsWith( "#BMP" ) )
             {
                 // 처리 추가
                 // +LNTYPE1
@@ -78,11 +88,69 @@ public class MusicStatus : MonoBehaviour
                 Debug.Log( "[SetHeaderInfo] tag = " + tag );
             }
         }
-    }
-    Dictionary<string/*Title?*/, MusicInfo> MusicInfos;
 
-    FileInfo fileInfo;
-    StreamReader streamReader;
+        public void SetMainInfo( string numberData, string noteData )
+        {
+            if ( numberData == null || noteData == null )
+            {
+                Debug.LogWarning( "[SetMainInfo] null parameter. numberData = " + numberData + ", data = " + noteData );
+                return;
+            }
+
+            // numberData = #xxxyy
+            // xxx : 마디(비트?) 번호, yy : 노트라인 번호
+            int nodeNumber = int.Parse( numberData.Substring( 1, 3 ) );
+            int lineNumber = int.Parse( numberData.Substring( 4, 2 ) );
+
+            if ( NoteInfoList == null )
+            {
+                NoteInfoList = new Dictionary<int/*noteIndex*/, List<LinkedList<NoteInfo>>>();
+            }
+
+            if ( !NoteInfoList.ContainsKey( nodeNumber ) )
+            {
+                NoteInfoList.Add( nodeNumber, new List<LinkedList<NoteInfo>>() );
+            }
+
+            List<LinkedList<NoteInfo>> noteList = NoteInfoList[ nodeNumber ];
+            if ( noteList.Count <= 0 )
+            {
+                noteList.Capacity = DividePerNode;
+                // 마지막 노트는 다음 마디에서 재생하므로 제외
+                noteList.AddRange( new LinkedList<NoteInfo>[ DividePerNode - 1 ] );
+            }
+
+            // noteData = 0000006E = 한 마디중 노트위치
+            // 2자씩 끊어 나누며, 각 번호는 WaveList에 등록된 번호
+            for ( int i = 0; i < noteData.Length; i += 2 )
+            {
+                int waveIndex = Convert.ToInt32( noteData.Substring( i, 2 ), 16 );
+                if ( waveIndex == 0 )
+                {
+                    continue;
+                }
+
+                // DividePerNode에 따라 해당 노트가 어느 위치에 있을지 계산
+                // ex) 16 = 2 * 32 / 4
+                int noteIndex = ( i * DividePerNode ) / noteData.Length;
+
+                if ( noteList[ noteIndex ] == null )
+                {
+                    noteList[ noteIndex ] = new LinkedList<NoteInfo>();
+                }
+
+                NoteInfo info;
+                info.WaveIndex = waveIndex;
+                info.LineNumber = lineNumber;
+                noteList[ noteIndex ].AddLast( info );
+            }
+        }
+    }
+
+    private Dictionary<string/*Title*/, MusicInfo> MusicInfos;
+
+    private FileInfo fileInfo;
+    private StreamReader streamReader;
 
     void Start()
     {
@@ -140,6 +208,36 @@ public class MusicStatus : MonoBehaviour
         {
             Debug.LogError( "[ReadBmsHeaderFile] Title is empty." );
             return;
+        }
+
+        // MainData 파싱
+        while ( !streamReader.EndOfStream )
+        {
+            string line = streamReader.ReadLine();
+            if ( line == null )
+            {
+                Debug.LogError( "[ReadBmsHeaderFile] line is null." );
+                return;
+            }
+
+            if ( line.Length <= 0 || !line.StartsWith( "#" ) )
+            {
+                continue;
+            }
+
+            int separator = line.IndexOf( ':' );
+            if ( separator <= 0 )
+            {
+                continue;
+            }
+
+            // ex) #01154:00000000000012000000001200000000 -> "#01154", "00000000000012000000001200000000"
+            info.SetMainInfo( line.Substring( 0, separator ), line.Substring( separator + 1 ) );
+        }
+
+        if ( MusicInfos == null )
+        {
+            MusicInfos = new Dictionary<string/*Title*/, MusicInfo>();
         }
 
         MusicInfos[ info.Title ] = info;
