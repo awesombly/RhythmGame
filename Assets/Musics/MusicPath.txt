@@ -1,0 +1,9 @@
+Assets/Musics/
+
+_utterfly_shade/BS_4KEY_Normal.bml
+_utterfly_shade/BS_5KEY_Eazy.bml
+_utterfly_shade/BS_5KEY_Normal.bml
+_utterfly_shade/BS_5KEY_Hard.bml
+_utterfly_shade/BS_7KEY_Normalbml
+_utterfly_shade/BS_7KEY_Hard.bml
+_utterfly_shade/BS_10KEY_Nomal.bml

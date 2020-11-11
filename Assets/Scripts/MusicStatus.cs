@@ -193,15 +193,18 @@ public class MusicStatus : MonoBehaviour
     }
     public StatusUI statusUI;
 
-    void Start()
+    void Awake()
     {
         if ( musicInfos == null )
         {
             musicInfos = new Dictionary<string/*Path*/, MusicInfo>();
         }
+    }
 
+    void Start()
+    {
         string path = "Assets/Musics/_utterfly_shade/BS_4KEY_Normal.bml";
-        ReadBmsHeaderFile( path );
+        ReadBmsFile( path );
 
         if ( musicInfos.ContainsKey( path ) )
         {
@@ -214,7 +217,7 @@ public class MusicStatus : MonoBehaviour
         
     }
 
-    public void ReadBmsHeaderFile( string bmsPath )
+    public void ReadBmsFile( string bmsPath )
     {
         if ( musicInfos.ContainsKey( bmsPath ) )
         {
@@ -237,7 +240,7 @@ public class MusicStatus : MonoBehaviour
             string line = streamReader.ReadLine();
             if ( line == null )
             {
-                Debug.LogError( "[ReadBmsHeaderFile] line is null." );
+                Debug.LogError( "[ReadBmsFile] line is null." );
                 return;
             }
 
@@ -263,7 +266,7 @@ public class MusicStatus : MonoBehaviour
 
         if ( info.Title.Length <= 0 )
         {
-            Debug.LogError( "[ReadBmsHeaderFile] Title is empty." );
+            Debug.LogError( "[ReadBmsFile] Title is empty." );
             return;
         }
 
@@ -273,7 +276,7 @@ public class MusicStatus : MonoBehaviour
             string line = streamReader.ReadLine();
             if ( line == null )
             {
-                Debug.LogError( "[ReadBmsHeaderFile] line is null." );
+                Debug.LogError( "[ReadBmsFile] line is null." );
                 return;
             }
 
@@ -293,5 +296,20 @@ public class MusicStatus : MonoBehaviour
         }
 
         musicInfos[ bmsPath ] = info;
+    }
+
+    public MusicInfo GetMusicInfo( string path )
+    {
+        if ( !musicInfos.ContainsKey( path ) )
+        {
+            ReadBmsFile( path );
+            if ( !musicInfos.ContainsKey( path ) )
+            {
+                Debug.LogError( "[GetMusicInfo] music not found. path = " + path );
+                return new MusicInfo();
+            }
+        }
+
+        return musicInfos[ path ];
     }
 }
