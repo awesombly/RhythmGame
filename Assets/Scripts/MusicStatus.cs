@@ -7,7 +7,7 @@ using UnityEngine;
 
 public class MusicStatus : MonoBehaviour
 {
-    struct MusicInfo
+    public struct MusicInfo
     {
         // HeaderData
         public string Genre;
@@ -146,15 +146,67 @@ public class MusicStatus : MonoBehaviour
             }
         }
     }
+    private Dictionary<string/*Path*/, MusicInfo> musicInfos;
 
-    private Dictionary<string/*Title*/, MusicInfo> MusicInfos;
+    [System.Serializable]
+    public struct StatusUI
+    {
+        public UnityEngine.UI.Text Genre;
+        public UnityEngine.UI.Text Title;
+        public UnityEngine.UI.Text Artist;
+        public UnityEngine.UI.Text Bpm;
+        public UnityEngine.UI.Text Level;
+        public UnityEngine.UI.Text Difficulty;
 
-    private FileInfo fileInfo;
-    private StreamReader streamReader;
+        public void SetText( MusicInfo info )
+        {
+            if ( Genre != null )
+            {
+                Genre.text = info.Genre;
+            }
+
+            if ( Title != null )
+            {
+                Title.text = info.Title;
+            }
+
+            if ( Artist != null )
+            {
+                Artist.text = info.Artist;
+            }
+
+            if ( Bpm != null )
+            {
+                Bpm.text = info.Bpm.ToString();
+            }
+
+            if ( Level != null )
+            {
+                Level.text = info.Level.ToString();
+            }
+
+            if ( Difficulty != null )
+            {
+                Difficulty.text = info.Difficulty.ToString();
+            }
+        }
+    }
+    public StatusUI statusUI;
 
     void Start()
     {
-        ReadBmsHeaderFile( "Assets/Musics/_utterfly_shade/BS_4KEY_Normal.bml" );
+        if ( musicInfos == null )
+        {
+            musicInfos = new Dictionary<string/*Path*/, MusicInfo>();
+        }
+
+        string path = "Assets/Musics/_utterfly_shade/BS_4KEY_Normal.bml";
+        ReadBmsHeaderFile( path );
+
+        if ( musicInfos.ContainsKey( path ) )
+        {
+            statusUI.SetText( musicInfos[ path ] );
+        }
     }
 
     void Update()
@@ -164,7 +216,12 @@ public class MusicStatus : MonoBehaviour
 
     public void ReadBmsHeaderFile( string bmsPath )
     {
-        fileInfo = new FileInfo( bmsPath );
+        if ( musicInfos.ContainsKey( bmsPath ) )
+        {
+            return;
+        }
+
+        FileInfo fileInfo = new FileInfo( bmsPath );
         if ( fileInfo == null )
         {
             Debug.LogError( "file not found." );
@@ -172,7 +229,7 @@ public class MusicStatus : MonoBehaviour
         }
 
         MusicInfo info = new MusicInfo();
-        streamReader = fileInfo.OpenText();
+        StreamReader streamReader = fileInfo.OpenText();
 
         // HeaderData 파싱
         while ( !streamReader.EndOfStream )
@@ -235,11 +292,6 @@ public class MusicStatus : MonoBehaviour
             info.SetMainInfo( line.Substring( 0, separator ), line.Substring( separator + 1 ) );
         }
 
-        if ( MusicInfos == null )
-        {
-            MusicInfos = new Dictionary<string/*Title*/, MusicInfo>();
-        }
-
-        MusicInfos[ info.Title ] = info;
+        musicInfos[ bmsPath ] = info;
     }
 }
