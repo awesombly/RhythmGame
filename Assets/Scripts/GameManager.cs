@@ -14,12 +14,12 @@ public class GameManager : MonoBehaviour
     public delegate void DelStartGame();
     public event DelStartGame OnStartGame;
 
-    void Awake()
+    private void Awake()
     {
         Instance = this;
     }
 
-    void Update()
+    private void Update()
     {
         if ( Input.GetKeyDown( KeyCode.T ) )
         {
@@ -27,7 +27,7 @@ public class GameManager : MonoBehaviour
         }
     }
 
-    void StartGame()
+    private void StartGame()
     {
         musicList.gameObject.SetActive( false );
         noteSpace.gameObject.SetActive( true );

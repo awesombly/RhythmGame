@@ -8,7 +8,7 @@ public class NoteSpace : MonoBehaviour
 
     MusicStatus.MusicInfo musicInfo;
 
-    void Start()
+    private void Start()
     {
         GameManager.Instance.OnStartGame += OnStartGame;
     }

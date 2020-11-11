@@ -17,7 +17,7 @@ public class MusicList : MonoBehaviour
     public delegate void DelSelectMusic( string title );
     public event DelSelectMusic OnSelectMusic;
 
-    void Awake()
+    private void Awake()
     {
         if ( musicList == null )
         {
@@ -25,7 +25,7 @@ public class MusicList : MonoBehaviour
         }
     }
 
-    void Start()
+    private void Start()
     {
         ReadMusicList( musicListPath );
 
@@ -37,7 +37,7 @@ public class MusicList : MonoBehaviour
         SelectMusicElement( musicList.First.Value );
     }
 
-    public void ReadMusicList( string filePath )
+    private void ReadMusicList( string filePath )
     {
         if ( GameManager.Instance.musicStatus == null )
         {
@@ -75,7 +75,7 @@ public class MusicList : MonoBehaviour
         }
     }
 
-    public void AddMusicList( string title )
+    private void AddMusicList( string title )
     {
         if ( content == null )
         {

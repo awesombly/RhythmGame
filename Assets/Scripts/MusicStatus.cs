@@ -201,7 +201,7 @@ public class MusicStatus : MonoBehaviour
     [HideInInspector]
     public string selectedTitle;
 
-    void Awake()
+    private void Awake()
     {
         if ( musicInfos == null )
         {
@@ -209,7 +209,7 @@ public class MusicStatus : MonoBehaviour
         }
     }
 
-    void Start()
+    private void Start()
     {
         GameManager.Instance.musicList.OnSelectMusic += OnSelectMusic;
     }
@@ -318,7 +318,7 @@ public class MusicStatus : MonoBehaviour
         return musicInfos[ title ];
     }
 
-    public void OnSelectMusic( string title )
+    private void OnSelectMusic( string title )
     {
         selectedTitle = title;
         statusUI.SetText( GetMusicInfo( title ) );
