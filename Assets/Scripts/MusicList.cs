@@ -2,6 +2,7 @@
 using System.Collections.Generic;
 using System.IO;
 using UnityEngine;
+using UnityEngine.UI;
 
 public class MusicList : MonoBehaviour
 {
@@ -11,10 +12,9 @@ public class MusicList : MonoBehaviour
 
     public string musicListPath;
 
-
     private LinkedList<GameObject> musicList;
     private GameObject selectedMusic;
-    
+
     void Awake()
     {
         if ( musicList == null )
@@ -26,11 +26,13 @@ public class MusicList : MonoBehaviour
     void Start()
     {
         ReadMusicList( musicListPath );
-    }
 
-    void Update()
-    {
-        
+        if ( musicList.Count <= 0 )
+        {
+            Debug.LogError( "[MusicList.Start] musicList is empty." );
+            return;
+        }
+        SelectMusicElement( musicList.First.Value );
     }
 
     public void ReadMusicList( string filePath )
@@ -65,7 +67,8 @@ public class MusicList : MonoBehaviour
                 continue;
             }
 
-            MusicStatus.MusicInfo musicInfo = musicStatus.GetMusicInfo( basePath + line );
+            string title = musicStatus.ReadBmsFile( basePath + line );
+            MusicStatus.MusicInfo musicInfo = musicStatus.GetMusicInfo( title );
             AddMusicList( musicInfo.Title );
         }
     }
@@ -87,6 +90,44 @@ public class MusicList : MonoBehaviour
             text.text = title;
         }
 
+        MusicElement element = instance.GetComponent<MusicElement>();
+        if ( element != null )
+        {
+            element.musicList = this;
+        }
+
         musicList.AddLast( instance );
+    }
+
+    public void SelectMusicElement( GameObject target )
+    {
+        if ( selectedMusic != null )
+        {
+            MusicElement prevElement = selectedMusic.GetComponent<MusicElement>();
+            if ( prevElement == null )
+            {
+                Debug.LogError( "[SelectMusicElement] invalid selectedMusic. name = " + selectedMusic.name );
+                return;
+            }
+            prevElement.selectedImage.SetActive( false );
+        }
+
+        selectedMusic = target;
+        if ( selectedMusic == null )
+        {
+            musicStatus.statusUI.SetText( new MusicStatus.MusicInfo() );
+            return;
+        }
+
+        MusicElement targetElement = selectedMusic.GetComponent<MusicElement>();
+        if ( targetElement == null )
+        {
+            Debug.LogError( "[SelectMusicElement] invalid target. name = " + selectedMusic.name );
+            return;
+        }
+        targetElement.selectedImage.SetActive( true );
+
+        MusicStatus.MusicInfo musicInfo = musicStatus.GetMusicInfo( selectedMusic.name );
+        musicStatus.statusUI.SetText( musicInfo );
     }
 }

@@ -65,6 +65,10 @@ public class MusicStatus : MonoBehaviour
             {
                 int.TryParse( data, out Difficulty );
             }
+            else if ( tag == "#PLAYER" || tag == "#TOTAL" )
+            {
+                ///
+            }
             else if ( tag.StartsWith( "#WAV" ) )
             {
                 string hexIndex = tag.Substring( 4 );
@@ -146,7 +150,7 @@ public class MusicStatus : MonoBehaviour
             }
         }
     }
-    private Dictionary<string/*Path*/, MusicInfo> musicInfos;
+    private Dictionary<string/*Title*/, MusicInfo> musicInfos;
 
     [System.Serializable]
     public struct StatusUI
@@ -197,38 +201,22 @@ public class MusicStatus : MonoBehaviour
     {
         if ( musicInfos == null )
         {
-            musicInfos = new Dictionary<string/*Path*/, MusicInfo>();
+            musicInfos = new Dictionary<string/*Title*/, MusicInfo>();
         }
     }
 
-    void Start()
-    {
-        string path = "Assets/Musics/_utterfly_shade/BS_4KEY_Normal.bml";
-        ReadBmsFile( path );
-
-        if ( musicInfos.ContainsKey( path ) )
-        {
-            statusUI.SetText( musicInfos[ path ] );
-        }
-    }
-
-    void Update()
-    {
-        
-    }
-
-    public void ReadBmsFile( string bmsPath )
+    public string ReadBmsFile( string bmsPath )
     {
         if ( musicInfos.ContainsKey( bmsPath ) )
         {
-            return;
+            return "";
         }
 
         FileInfo fileInfo = new FileInfo( bmsPath );
         if ( fileInfo == null )
         {
             Debug.LogError( "file not found." );
-            return;
+            return "";
         }
 
         MusicInfo info = new MusicInfo();
@@ -241,7 +229,7 @@ public class MusicStatus : MonoBehaviour
             if ( line == null )
             {
                 Debug.LogError( "[ReadBmsFile] line is null." );
-                return;
+                return "";
             }
 
             if ( line.StartsWith( "*---------------------- MAIN DATA FIELD" ) )
@@ -267,7 +255,7 @@ public class MusicStatus : MonoBehaviour
         if ( info.Title.Length <= 0 )
         {
             Debug.LogError( "[ReadBmsFile] Title is empty." );
-            return;
+            return "";
         }
 
         // MainData 파싱
@@ -277,7 +265,7 @@ public class MusicStatus : MonoBehaviour
             if ( line == null )
             {
                 Debug.LogError( "[ReadBmsFile] line is null." );
-                return;
+                return "";
             }
 
             if ( line.Length <= 0 || !line.StartsWith( "#" ) )
@@ -295,21 +283,19 @@ public class MusicStatus : MonoBehaviour
             info.SetMainInfo( line.Substring( 0, separator ), line.Substring( separator + 1 ) );
         }
 
-        musicInfos[ bmsPath ] = info;
+        musicInfos[ info.Title ] = info;
+
+        return info.Title;
     }
 
-    public MusicInfo GetMusicInfo( string path )
+    public MusicInfo GetMusicInfo( string title )
     {
-        if ( !musicInfos.ContainsKey( path ) )
+        if ( !musicInfos.ContainsKey( title ) )
         {
-            ReadBmsFile( path );
-            if ( !musicInfos.ContainsKey( path ) )
-            {
-                Debug.LogError( "[GetMusicInfo] music not found. path = " + path );
-                return new MusicInfo();
-            }
+            Debug.LogError( "[GetMusicInfo] music not found. title = " + title );
+            return new MusicInfo();
         }
 
-        return musicInfos[ path ];
+        return musicInfos[ title ];
     }
 }
