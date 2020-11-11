@@ -152,7 +152,7 @@ public class MusicStatus : MonoBehaviour
     }
     private Dictionary<string/*Title*/, MusicInfo> musicInfos;
 
-    [System.Serializable]
+    [Serializable]
     public struct StatusUI
     {
         public UnityEngine.UI.Text Genre;
@@ -195,7 +195,11 @@ public class MusicStatus : MonoBehaviour
             }
         }
     }
-    public StatusUI statusUI;
+    [SerializeField]
+    private StatusUI statusUI;
+
+    [HideInInspector]
+    public string selectedTitle;
 
     void Awake()
     {
@@ -203,6 +207,11 @@ public class MusicStatus : MonoBehaviour
         {
             musicInfos = new Dictionary<string/*Title*/, MusicInfo>();
         }
+    }
+
+    void Start()
+    {
+        GameManager.Instance.musicList.OnSelectMusic += OnSelectMusic;
     }
 
     public string ReadBmsFile( string bmsPath )
@@ -288,8 +297,18 @@ public class MusicStatus : MonoBehaviour
         return info.Title;
     }
 
-    public MusicInfo GetMusicInfo( string title )
+    public MusicInfo GetMusicInfo( string title = "" )
     {
+        if ( title.Length <= 0 )
+        {
+            if ( !musicInfos.ContainsKey( selectedTitle ) )
+            {
+                Debug.LogError( "[GetMusicInfo] music not found. selectedTitle = " + selectedTitle );
+                return new MusicInfo();
+            }
+            return musicInfos[ selectedTitle ];
+        }
+
         if ( !musicInfos.ContainsKey( title ) )
         {
             Debug.LogError( "[GetMusicInfo] music not found. title = " + title );
@@ -297,5 +316,11 @@ public class MusicStatus : MonoBehaviour
         }
 
         return musicInfos[ title ];
+    }
+
+    public void OnSelectMusic( string title )
+    {
+        selectedTitle = title;
+        statusUI.SetText( GetMusicInfo( title ) );
     }
 }

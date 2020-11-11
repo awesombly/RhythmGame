@@ -6,17 +6,14 @@ public class MusicElement : MonoBehaviour
 {
     public GameObject selectedImage;
 
-    [HideInInspector]
-    public MusicList musicList;
-
     public void OnSelected()
     {
-        if ( musicList == null )
+        if ( GameManager.Instance.musicList == null )
         {
             Debug.LogError( "[OnSelected] musicList is null." );
             return;
         }
 
-        musicList.SelectMusicElement( gameObject );
+        GameManager.Instance.musicList.SelectMusicElement( gameObject );
     }
 }

@@ -6,14 +6,16 @@ using UnityEngine.UI;
 
 public class MusicList : MonoBehaviour
 {
-    public MusicStatus musicStatus;
     public GameObject content;
-    public GameObject musicListElement;
+    public GameObject musicElementPrefab;
 
     public string musicListPath;
 
     private LinkedList<GameObject> musicList;
     private GameObject selectedMusic;
+
+    public delegate void DelSelectMusic( string title );
+    public event DelSelectMusic OnSelectMusic;
 
     void Awake()
     {
@@ -37,7 +39,7 @@ public class MusicList : MonoBehaviour
 
     public void ReadMusicList( string filePath )
     {
-        if ( musicStatus == null )
+        if ( GameManager.Instance.musicStatus == null )
         {
             return;
         }
@@ -67,8 +69,8 @@ public class MusicList : MonoBehaviour
                 continue;
             }
 
-            string title = musicStatus.ReadBmsFile( basePath + line );
-            MusicStatus.MusicInfo musicInfo = musicStatus.GetMusicInfo( title );
+            string title = GameManager.Instance.musicStatus.ReadBmsFile( basePath + line );
+            MusicStatus.MusicInfo musicInfo = GameManager.Instance.musicStatus.GetMusicInfo( title );
             AddMusicList( musicInfo.Title );
         }
     }
@@ -81,19 +83,13 @@ public class MusicList : MonoBehaviour
             return;
         }
 
-        GameObject instance = Instantiate( musicListElement, content.transform );
+        GameObject instance = Instantiate( musicElementPrefab, content.transform );
         instance.name = title;
 
         UnityEngine.UI.Text text = instance.GetComponentInChildren<UnityEngine.UI.Text>();
         if ( text != null )
         {
             text.text = title;
-        }
-
-        MusicElement element = instance.GetComponent<MusicElement>();
-        if ( element != null )
-        {
-            element.musicList = this;
         }
 
         musicList.AddLast( instance );
@@ -115,7 +111,7 @@ public class MusicList : MonoBehaviour
         selectedMusic = target;
         if ( selectedMusic == null )
         {
-            musicStatus.statusUI.SetText( new MusicStatus.MusicInfo() );
+            OnSelectMusic?.Invoke( "" );
             return;
         }
 
@@ -127,7 +123,6 @@ public class MusicList : MonoBehaviour
         }
         targetElement.selectedImage.SetActive( true );
 
-        MusicStatus.MusicInfo musicInfo = musicStatus.GetMusicInfo( selectedMusic.name );
-        musicStatus.statusUI.SetText( musicInfo );
+        OnSelectMusic?.Invoke( selectedMusic.name );
     }
 }
