@@ -1,6 +1,7 @@
 ﻿using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
+using UnityEngine.Playables;
 
 public class Line : MonoBehaviour
 {
@@ -20,22 +21,38 @@ public class Line : MonoBehaviour
 
     private void Awake()
     {
-        hitRangeMilliSeconds[ ( int )EHitRate.PERFECT ] = 100;
-        hitRangeMilliSeconds[ ( int )EHitRate.GOOD ] = 200;
-        hitRangeMilliSeconds[ ( int )EHitRate.BAD ] = 300;
+        hitRangeMilliSeconds[ ( int )EHitRate.PERFECT ] = 75;
+        hitRangeMilliSeconds[ ( int )EHitRate.GOOD ] = 150;
+        hitRangeMilliSeconds[ ( int )EHitRate.BAD ] = 200;
     }
 
     private void Update()
     {
-        if ( notes.Count <= 0 )
+        while( true )
         {
-            return;
-        }
+            if ( notes.Count <= 0 )
+            {
+                return;
+            }
 
-        Note note = notes.Peek();
-        if ( note == null )
-        {
-            Debug.LogError( "[Line.Update] note is null." );
+            Note note = notes.Peek();
+            if ( note == null )
+            {
+                Debug.LogError( "[Line.Update] note is null." );
+                return;
+            }
+
+            // HitLine을 지나서, BAD 판정 범위로 들어올시 MISS 처리
+            long interval = GameManager.Instance.noteSpace.elapsedMilliSeconds - ( note.hitMiliSceconds + note.spawnMiliSceconds );
+            if ( interval > hitRangeMilliSeconds[ ( int )EHitRate.BAD - 1 ] )
+            {
+                Destroy( note.gameObject );
+                notes.Dequeue();
+                /// + Miss 처리
+
+                continue;
+            }
+
             return;
         }
     }
