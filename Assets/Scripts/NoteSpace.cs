@@ -18,7 +18,9 @@ public class NoteSpace : MonoBehaviour
     private int currentBit;
     private int currentTotalBit;
 
-    
+    public delegate void DelChangeResume( bool isResume );
+    public event DelChangeResume OnChangeResume;
+
     private void Start()
     {
         GameManager.Instance.OnStartGame += OnStartGame;
@@ -28,6 +30,20 @@ public class NoteSpace : MonoBehaviour
 
     private void Update()
     {
+        if ( Input.GetKeyDown( KeyCode.Escape ) )
+        {
+            if ( stopWatch.IsRunning )
+            {
+                stopWatch.Stop();
+            }
+            else
+            {
+                stopWatch.Start();
+            }
+
+            OnChangeResume?.Invoke( !stopWatch.IsRunning );
+        }
+
         if ( !stopWatch.IsRunning )
         {
             return;
@@ -104,6 +120,7 @@ public class NoteSpace : MonoBehaviour
 
         stopWatch.Reset();
         stopWatch.Start();
+        OnChangeResume?.Invoke( false );
     }
 
     private void OnEndGame()
@@ -117,5 +134,6 @@ public class NoteSpace : MonoBehaviour
         }
 
         stopWatch.Reset();
+        OnChangeResume?.Invoke( false );
     }
 }

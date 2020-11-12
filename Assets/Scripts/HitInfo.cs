@@ -20,6 +20,8 @@ public class HitInfo : MonoBehaviour
     public GameObject badDisplay;
     public GameObject missDisplay;
 
+    public GameObject resumeDisplay;
+
     public float hitDisplayTime;
     private float remainedDisplayTime;
 
@@ -29,6 +31,8 @@ public class HitInfo : MonoBehaviour
         {
             line.OnHitNote += OnHitNote;
         }
+
+        GameManager.Instance.noteSpace.OnChangeResume += OnChangeResume;
     }
 
     private void Update()
@@ -83,5 +87,10 @@ public class HitInfo : MonoBehaviour
                 UnityEngine.Debug.LogError( "[OnHitNote] invalid hitRate. " + hitRate );
             } break;
         }
+    }
+
+    private void OnChangeResume( bool isResume )
+    {
+        resumeDisplay.SetActive( isResume );
     }
 }
