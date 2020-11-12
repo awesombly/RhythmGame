@@ -4,9 +4,15 @@ using UnityEngine;
 
 public class Note : MonoBehaviour
 {
-    private RectTransform rectTransform;
+    public RectTransform rectTransform;
+    public int waveIndex;
+    public long hitMiliSceconds;
+    public long spawnMiliSceconds;
 
-    private void Start()
+    public Vector3 targetPosition;
+    private Vector3 spawnPosition;
+
+    private void Awake()
     {
         rectTransform = GetComponent<RectTransform>();
         if ( rectTransform == null )
@@ -14,10 +20,18 @@ public class Note : MonoBehaviour
             Debug.LogError( "[Not.Start] RectTransform not found." );
             return;
         }
+
+        spawnPosition = rectTransform.position;
+        spawnMiliSceconds = GameManager.Instance.noteSpace.elapsedMilliSeconds;
     }
 
     private void Update()
     {
-        rectTransform.localPosition += Vector3.down * Time.deltaTime * 600.0f;
+        // hit 판정까지 시간 비율 ( 0.0 : 스폰시, 1.0 : 정확한 hit 타이밍 )
+        // deltaTime을 이용한 이동방식은 정확한 계산이 안되어 hit까지 시간으로 계산함
+        float rate = ( float )( ( GameManager.Instance.noteSpace.elapsedMilliSeconds - spawnMiliSceconds ) / ( double )hitMiliSceconds );
+
+        // Lerp() 사용시 1.0 이상은 계산이 안됨
+        rectTransform.position = spawnPosition + ( targetPosition - spawnPosition ) * rate;
     }
 }

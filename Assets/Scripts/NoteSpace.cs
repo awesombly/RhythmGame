@@ -4,11 +4,14 @@ using UnityEngine;
 
 public class NoteSpace : MonoBehaviour
 {
+    public int spawnToHitBit = 128;
     public List<Line> lines;
 
     private MusicStatus.MusicInfo musicInfo;
     System.Diagnostics.Stopwatch stopWatch = new System.Diagnostics.Stopwatch();
 
+    [HideInInspector]
+    public long elapsedMilliSeconds;
     private long milliSecondsPerNode;
     private long milliSecondsPerBit;
 
@@ -16,10 +19,11 @@ public class NoteSpace : MonoBehaviour
     private int currentBit;
     private int currentTotalBit;
 
-
+    
     private void Start()
     {
         GameManager.Instance.OnStartGame += OnStartGame;
+        gameObject.SetActive( false );
     }
 
     private void Update()
@@ -29,8 +33,9 @@ public class NoteSpace : MonoBehaviour
             return;
         }
 
+        elapsedMilliSeconds = stopWatch.ElapsedMilliseconds;
         // ex) 66 = 1,000 / 15
-        long elapsedBit = stopWatch.ElapsedMilliseconds / milliSecondsPerBit;
+        long elapsedBit = elapsedMilliSeconds / milliSecondsPerBit;
 
         while ( currentTotalBit < elapsedBit )
         {
@@ -57,7 +62,8 @@ public class NoteSpace : MonoBehaviour
                     continue;
                 }
 
-                lines[ second - 1 ].SpawnNote();
+                long hitMilliSeconds = ( currentTotalBit + spawnToHitBit ) * milliSecondsPerBit - elapsedMilliSeconds;
+                lines[ second - 1 ].SpawnNote( note.WaveIndex, hitMilliSeconds );
             }
         }
     }
