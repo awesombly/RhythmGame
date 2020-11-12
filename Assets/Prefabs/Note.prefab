@@ -33,7 +33,7 @@ RectTransform:
   m_Father: {fileID: 0}
   m_RootOrder: 0
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
-  m_AnchorMin: {x: 0, y: 1.05}
+  m_AnchorMin: {x: 0, y: 1.08}
   m_AnchorMax: {x: 1, y: 1.1}
   m_AnchoredPosition: {x: 0, y: 0}
   m_SizeDelta: {x: -4, y: 0}
@@ -88,3 +88,8 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: ae4f0d7d17d812f49aa9933146c8ebd8, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
+  rectTransform: {fileID: 0}
+  waveIndex: 0
+  hitMiliSceconds: 0
+  spawnMiliSceconds: 0
+  targetPosition: {x: 0, y: 0, z: 0}

@@ -7,6 +7,21 @@ using UnityEngine;
 
 public class MusicStatus : MonoBehaviour
 {
+    public static int DividePerNode = 32; // 한 마디를 몇 박자로 나눠 처리할건지
+
+    private float noteSpeed;
+    public float NoteSpeed
+    {
+        get { return noteSpeed; }
+        set
+        {
+            noteSpeed = value;
+            // 노트 생성시 4박자후 HitLine에 도착
+            noteDelayBit = ( int )( DividePerNode * 4 / noteSpeed );
+        }
+    }
+    public int noteDelayBit;
+
     public struct MusicInfo
     {
         // HeaderData
@@ -26,8 +41,6 @@ public class MusicStatus : MonoBehaviour
         }
         // MainData
         public Dictionary< int/*noteIndex*/, List< LinkedList< NoteInfo > > > NoteInfoList;
-
-        public static int DividePerNode = 32; // 한 마디를 몇 박자로 나눠 처리할건지
 
         public void SetHeaderInfo( string tag, string data )
         {
@@ -212,6 +225,22 @@ public class MusicStatus : MonoBehaviour
     private void Start()
     {
         GameManager.Instance.musicList.OnSelectMusic += OnSelectMusic;
+        NoteSpeed = 1.0f;
+    }
+
+    private void Update()
+    {
+        if ( Input.GetKeyDown( KeyCode.PageUp ) )
+        {
+            NoteSpeed += 0.1f;
+            Debug.Log( "NoteSpeed = " + NoteSpeed );
+        }
+
+        if ( Input.GetKeyDown( KeyCode.PageDown ) )
+        {
+            NoteSpeed = Mathf.Max( noteSpeed - 0.1f, 0.1f );
+            Debug.Log( "NoteSpeed = " + NoteSpeed );
+        }
     }
 
     public string ReadBmsFile( string bmsPath )

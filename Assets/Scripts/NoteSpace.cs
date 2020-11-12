@@ -4,7 +4,6 @@ using UnityEngine;
 
 public class NoteSpace : MonoBehaviour
 {
-    public int spawnToHitBit = 128;
     public List<Line> lines;
 
     private MusicStatus.MusicInfo musicInfo;
@@ -62,7 +61,7 @@ public class NoteSpace : MonoBehaviour
                     continue;
                 }
 
-                long hitMilliSeconds = ( currentTotalBit + spawnToHitBit ) * milliSecondsPerBit - elapsedMilliSeconds;
+                long hitMilliSeconds = ( currentTotalBit + GameManager.Instance.musicStatus.noteDelayBit ) * milliSecondsPerBit - elapsedMilliSeconds;
                 lines[ second - 1 ].SpawnNote( note.WaveIndex, hitMilliSeconds );
             }
         }
@@ -72,7 +71,7 @@ public class NoteSpace : MonoBehaviour
     {
         currentBit += value;
 
-        int dividePerNode = ( MusicStatus.MusicInfo.DividePerNode - 1 );
+        int dividePerNode = ( MusicStatus.DividePerNode - 1 );
         if ( currentBit >= dividePerNode )
         {
             currentNode += currentBit / dividePerNode;
@@ -80,7 +79,7 @@ public class NoteSpace : MonoBehaviour
         }
 
         // ex) 65 = ( 2 * 32 ) + 1
-        currentTotalBit = ( currentNode * MusicStatus.MusicInfo.DividePerNode ) + currentBit;
+        currentTotalBit = ( currentNode * MusicStatus.DividePerNode ) + currentBit;
     }
 
     private void OnStartGame()
@@ -89,7 +88,7 @@ public class NoteSpace : MonoBehaviour
         // ex) 480 = 60000 / 125
         milliSecondsPerNode = 60000 / musicInfo.Bpm;
         // ex) 15 = 480 / 32
-        milliSecondsPerBit = milliSecondsPerNode / MusicStatus.MusicInfo.DividePerNode;
+        milliSecondsPerBit = milliSecondsPerNode / MusicStatus.DividePerNode;
         currentNode = 0;
         currentBit = 0;
 

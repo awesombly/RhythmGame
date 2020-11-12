@@ -450,6 +450,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: fdcaa01061dea9a469be78513da02e45, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
+  noteDelayBit: 0
   statusUI:
     Genre: {fileID: 1212708744}
     Title: {fileID: 1918071709}
@@ -3453,7 +3454,7 @@ RectTransform:
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
   m_AnchorMin: {x: 0, y: 0}
   m_AnchorMax: {x: 1, y: 1}
-  m_AnchoredPosition: {x: 9.699951, y: 0}
+  m_AnchoredPosition: {x: 0, y: 0}
   m_SizeDelta: {x: -9.699951, y: 0}
   m_Pivot: {x: 0, y: 1}
 --- !u!114 &1616780182
@@ -4640,7 +4641,6 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 4502ebefa6f9dba4f99dc5b35d674f29, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  spawnToHitBit: 128
   lines:
   - {fileID: 1004093850}
   - {fileID: 572446616}
