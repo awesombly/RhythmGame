@@ -83,7 +83,7 @@ public class NoteSpace : MonoBehaviour
         currentTotalBit = ( currentNode * MusicStatus.MusicInfo.DividePerNode ) + currentBit;
     }
 
-    public void OnStartGame()
+    private void OnStartGame()
     {
         musicInfo = GameManager.Instance.musicStatus.GetMusicInfo();
         // ex) 480 = 60000 / 125

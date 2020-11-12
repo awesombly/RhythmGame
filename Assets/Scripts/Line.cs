@@ -11,20 +11,16 @@ public class Line : MonoBehaviour
 
     private Queue<Note> notes = new Queue<Note>();
     
-    enum EHitRate
-    {
-        PERFECT = 0,
-        GOOD,
-        BAD,
-        ENUM_SIZE
-    }
-    private long[] hitableInterval = new long[ ( int )EHitRate.ENUM_SIZE ];
+    private long[] hitableInterval = new long[ ( int )HitInfo.EHitRate.HIT_ENUM_COUNT ];
+
+    public delegate void DelHitNote( HitInfo.EHitRate hitRate );
+    public event DelHitNote OnHitNote;
 
     private void Awake()
     {
-        hitableInterval[ ( int )EHitRate.PERFECT ] = 75;
-        hitableInterval[ ( int )EHitRate.GOOD ] = 150;
-        hitableInterval[ ( int )EHitRate.BAD ] = 225;
+        hitableInterval[ ( int )HitInfo.EHitRate.PERFECT ] = 75;
+        hitableInterval[ ( int )HitInfo.EHitRate.GOOD ] = 150;
+        hitableInterval[ ( int )HitInfo.EHitRate.BAD ] = 225;
     }
 
     private void Update()
@@ -45,13 +41,13 @@ public class Line : MonoBehaviour
 
             // HitLine을 지나서, BAD 판정 범위로 들어올시 MISS 처리
             int interval = ( int )( GameManager.Instance.noteSpace.elapsedMilliSeconds - ( note.hitMiliSceconds + note.spawnMiliSceconds ) );
-            if ( interval > hitableInterval[ ( int )EHitRate.BAD - 1 ] )
+            if ( interval > hitableInterval[ ( int )HitInfo.EHitRate.BAD - 1 ] )
             {
                 note.gameObject.SetActive( false );
                 Destroy( note.gameObject );
                 notes.Dequeue();
-                /// + Miss 처리
 
+                OnHitNote?.Invoke( HitInfo.EHitRate.MISS );
                 continue;
             }
 
@@ -66,8 +62,8 @@ public class Line : MonoBehaviour
                         note.gameObject.SetActive( false );
                         Destroy( note.gameObject );
                         notes.Dequeue();
-                        /// + 처리
-                        Debug.Log( "Hit! " + (EHitRate)i );
+
+                        OnHitNote?.Invoke( ( HitInfo.EHitRate )i );
                         return;
                     }
                 }

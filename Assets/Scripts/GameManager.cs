@@ -10,6 +10,7 @@ public class GameManager : MonoBehaviour
     public MusicList musicList;
     public MusicStatus musicStatus;
     public NoteSpace noteSpace;
+    public HitInfo hitInfo;
 
     public delegate void DelStartGame();
     public event DelStartGame OnStartGame;
