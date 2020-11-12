@@ -22,6 +22,9 @@ public class MusicStatus : MonoBehaviour
     }
     public int noteDelayBit;
 
+    public delegate void DelChangeNoteSpeed();
+    public event DelChangeNoteSpeed OnChangeNoteSpeed;
+
     public struct MusicInfo
     {
         // HeaderData
@@ -233,12 +236,14 @@ public class MusicStatus : MonoBehaviour
         if ( Input.GetKeyDown( KeyCode.PageUp ) )
         {
             NoteSpeed += 0.1f;
+            OnChangeNoteSpeed?.Invoke();
             Debug.Log( "NoteSpeed = " + NoteSpeed );
         }
 
         if ( Input.GetKeyDown( KeyCode.PageDown ) )
         {
             NoteSpeed = Mathf.Max( noteSpeed - 0.1f, 0.1f );
+            OnChangeNoteSpeed?.Invoke();
             Debug.Log( "NoteSpeed = " + NoteSpeed );
         }
     }

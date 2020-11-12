@@ -22,6 +22,7 @@ public class NoteSpace : MonoBehaviour
     private void Start()
     {
         GameManager.Instance.OnStartGame += OnStartGame;
+        GameManager.Instance.OnEndGame += OnEndGame;
         gameObject.SetActive( false );
     }
 
@@ -84,6 +85,14 @@ public class NoteSpace : MonoBehaviour
 
     private void OnStartGame()
     {
+        foreach ( Line line in lines )
+        {
+            while ( line.notes.Count > 0 )
+            {
+                line.RemoveNote( line.notes.Peek() );
+            }
+        }
+
         musicInfo = GameManager.Instance.musicStatus.GetMusicInfo();
         // ex) 480 = 60000 / 125
         milliSecondsPerNode = 60000 / musicInfo.Bpm;
@@ -91,8 +100,22 @@ public class NoteSpace : MonoBehaviour
         milliSecondsPerBit = milliSecondsPerNode / MusicStatus.DividePerNode;
         currentNode = 0;
         currentBit = 0;
+        currentTotalBit = 0;
 
         stopWatch.Reset();
         stopWatch.Start();
+    }
+
+    private void OnEndGame()
+    {
+        foreach ( Line line in lines )
+        {
+            while ( line.notes.Count > 0 )
+            {
+                line.RemoveNote( line.notes.Peek() );
+            }
+        }
+
+        stopWatch.Reset();
     }
 }

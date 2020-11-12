@@ -15,6 +15,9 @@ public class GameManager : MonoBehaviour
     public delegate void DelStartGame();
     public event DelStartGame OnStartGame;
 
+    public delegate void DelEndGame();
+    public event DelEndGame OnEndGame;
+
     private void Awake()
     {
         Instance = this;
@@ -26,6 +29,11 @@ public class GameManager : MonoBehaviour
         {
             StartGame();
         }
+
+        if ( Input.GetKeyDown( KeyCode.R ) )
+        {
+            EndGame();
+        }
     }
 
     private void StartGame()
@@ -33,5 +41,12 @@ public class GameManager : MonoBehaviour
         musicList.gameObject.SetActive( false );
         noteSpace.gameObject.SetActive( true );
         OnStartGame?.Invoke();
+    }
+
+    private void EndGame()
+    {
+        noteSpace.gameObject.SetActive( false );
+        musicList.gameObject.SetActive( true );
+        OnEndGame?.Invoke();
     }
 }

@@ -9,7 +9,7 @@ public class Line : MonoBehaviour
     public RectTransform hitLine;
     public GameObject notePrefab;
 
-    private Queue<Note> notes = new Queue<Note>();
+    public Queue<Note> notes = new Queue<Note>();
     
     private long[] hitableInterval = new long[ ( int )HitInfo.EHitRate.HIT_ENUM_COUNT ];
 
@@ -43,10 +43,7 @@ public class Line : MonoBehaviour
             int interval = ( int )( GameManager.Instance.noteSpace.elapsedMilliSeconds - ( note.hitMiliSceconds + note.spawnMiliSceconds ) );
             if ( interval > hitableInterval[ ( int )HitInfo.EHitRate.BAD - 1 ] )
             {
-                note.gameObject.SetActive( false );
-                Destroy( note.gameObject );
-                notes.Dequeue();
-
+                RemoveNote( note );
                 OnHitNote?.Invoke( HitInfo.EHitRate.MISS );
                 continue;
             }
@@ -59,10 +56,7 @@ public class Line : MonoBehaviour
                 {
                     if ( interval <= hitableInterval[ i ] )
                     {
-                        note.gameObject.SetActive( false );
-                        Destroy( note.gameObject );
-                        notes.Dequeue();
-
+                        RemoveNote( note );
                         OnHitNote?.Invoke( ( HitInfo.EHitRate )i );
                         return;
                     }
@@ -93,5 +87,19 @@ public class Line : MonoBehaviour
         note.hitMiliSceconds = hitMilliSeconds;
         note.targetPosition = hitLine.position;
         notes.Enqueue( note );
+    }
+
+    public void RemoveNote( Note note )
+    {
+        if ( note == null )
+        {
+            Debug.LogError( "[RemoveNote] note is null." );
+            notes.Dequeue();
+            return;
+        }
+
+        note.gameObject.SetActive( false );
+        Destroy( note.gameObject );
+        notes.Dequeue();
     }
 }
