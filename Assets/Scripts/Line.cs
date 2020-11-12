@@ -5,6 +5,7 @@ using UnityEngine.Playables;
 
 public class Line : MonoBehaviour
 {
+    public KeyCode hitKeyCode;
     public RectTransform hitLine;
     public GameObject notePrefab;
 
@@ -17,13 +18,13 @@ public class Line : MonoBehaviour
         BAD,
         ENUM_SIZE
     }
-    private long[] hitRangeMilliSeconds = new long[ ( int )EHitRate.ENUM_SIZE ];
+    private long[] hitableInterval = new long[ ( int )EHitRate.ENUM_SIZE ];
 
     private void Awake()
     {
-        hitRangeMilliSeconds[ ( int )EHitRate.PERFECT ] = 75;
-        hitRangeMilliSeconds[ ( int )EHitRate.GOOD ] = 150;
-        hitRangeMilliSeconds[ ( int )EHitRate.BAD ] = 200;
+        hitableInterval[ ( int )EHitRate.PERFECT ] = 75;
+        hitableInterval[ ( int )EHitRate.GOOD ] = 150;
+        hitableInterval[ ( int )EHitRate.BAD ] = 225;
     }
 
     private void Update()
@@ -43,14 +44,33 @@ public class Line : MonoBehaviour
             }
 
             // HitLine을 지나서, BAD 판정 범위로 들어올시 MISS 처리
-            long interval = GameManager.Instance.noteSpace.elapsedMilliSeconds - ( note.hitMiliSceconds + note.spawnMiliSceconds );
-            if ( interval > hitRangeMilliSeconds[ ( int )EHitRate.BAD - 1 ] )
+            int interval = ( int )( GameManager.Instance.noteSpace.elapsedMilliSeconds - ( note.hitMiliSceconds + note.spawnMiliSceconds ) );
+            if ( interval > hitableInterval[ ( int )EHitRate.BAD - 1 ] )
             {
+                note.gameObject.SetActive( false );
                 Destroy( note.gameObject );
                 notes.Dequeue();
                 /// + Miss 처리
 
                 continue;
+            }
+
+            if ( Input.GetKeyDown( hitKeyCode ) )
+            {
+                interval = Mathf.Abs( interval );
+
+                for ( int i = 0; i < hitableInterval.Length; ++i )
+                {
+                    if ( interval <= hitableInterval[ i ] )
+                    {
+                        note.gameObject.SetActive( false );
+                        Destroy( note.gameObject );
+                        notes.Dequeue();
+                        /// + 처리
+                        Debug.Log( "Hit! " + (EHitRate)i );
+                        return;
+                    }
+                }
             }
 
             return;
