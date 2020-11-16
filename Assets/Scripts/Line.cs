@@ -8,6 +8,7 @@ public class Line : MonoBehaviour
     public KeyCode hitKeyCode;
     public RectTransform hitLine;
     public GameObject notePrefab;
+    public GameObject bgNotePrefab;
 
     public Queue<Note> notes = new Queue<Note>();
     public Queue<Note> backgrountNotes = new Queue<Note>();
@@ -22,6 +23,11 @@ public class Line : MonoBehaviour
         hitableInterval[ ( int )HitInfo.EHitRate.PERFECT ] = 75;
         hitableInterval[ ( int )HitInfo.EHitRate.GOOD ] = 150;
         hitableInterval[ ( int )HitInfo.EHitRate.BAD ] = 225;
+    }
+
+    private void Start()
+    {
+        GameManager.Instance.noteSpace.OnVisibleBgNote += OnVisibleBgNote;
     }
 
     private void Update()
@@ -98,7 +104,11 @@ public class Line : MonoBehaviour
 
     public void SpawnNote( Note.NoteInfo noteInfo, long hitMilliSeconds )
     {
-        GameObject instance = Instantiate( notePrefab, gameObject.transform );
+        int firstIndex = noteInfo.LineNumber / 10;
+        /// + 라인따라 프리팹 별도 적용
+        GameObject prefab = ( firstIndex == 1 ? notePrefab : bgNotePrefab );
+
+        GameObject instance = Instantiate( prefab, gameObject.transform );
         if ( instance == null )
         {
             Debug.LogError( "[SapwnNote] instance is null." );
@@ -116,14 +126,15 @@ public class Line : MonoBehaviour
         note.hitMiliSceconds = hitMilliSeconds;
         note.targetPosition = hitLine.position;
 
-        int first = noteInfo.LineNumber / 10;
-        if ( first == 1 )
+        if ( firstIndex == 1 )
         {
             notes.Enqueue( note );
+            note.SetVisible( true );
         }
         else
         {
             backgrountNotes.Enqueue( note );
+            note.SetVisible( GameManager.Instance.noteSpace.isVisibleBgNote );
         }
     }
 
@@ -158,6 +169,14 @@ public class Line : MonoBehaviour
         else
         {
             backgrountNotes.Dequeue();
+        }
+    }
+
+    void OnVisibleBgNote( bool isVisible )
+    {
+        foreach ( Note note in backgrountNotes )
+        {
+            note.SetVisible( isVisible );
         }
     }
 }

@@ -1081,8 +1081,6 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 969d7a5313844614cade75bf3e61cd22, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  audioPath: Assets/Musics/_utterfly_shade/
-  audioSource: {fileID: 0}
 --- !u!20 &519420031
 Camera:
   m_ObjectHideFlags: 0
@@ -4764,6 +4762,7 @@ MonoBehaviour:
   - {fileID: 761156739}
   - {fileID: 601019472}
   elapsedMilliSeconds: 0
+  isVisibleBgNote: 0
 --- !u!114 &1997033436
 MonoBehaviour:
   m_ObjectHideFlags: 0

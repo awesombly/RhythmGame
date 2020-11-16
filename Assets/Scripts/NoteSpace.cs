@@ -21,6 +21,11 @@ public class NoteSpace : MonoBehaviour
     public delegate void DelChangeResume( bool isResume );
     public event DelChangeResume OnChangeResume;
 
+    public delegate void DelVisibleBgNote( bool isVisible );
+    public event DelVisibleBgNote OnVisibleBgNote;
+    [HideInInspector]
+    public bool isVisibleBgNote = false;
+
     private void Start()
     {
         GameManager.Instance.OnStartGame += OnStartGame;
@@ -42,6 +47,12 @@ public class NoteSpace : MonoBehaviour
             }
 
             OnChangeResume?.Invoke( !stopWatch.IsRunning );
+        }
+
+        if ( Input.GetKeyDown( KeyCode.Insert ) )
+        {
+            isVisibleBgNote = !isVisibleBgNote;
+            OnVisibleBgNote?.Invoke( isVisibleBgNote );
         }
 
         if ( !stopWatch.IsRunning )

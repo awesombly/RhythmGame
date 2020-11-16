@@ -18,8 +18,17 @@ public class Note : MonoBehaviour
     public Vector3 targetPosition;
     private Vector3 spawnPosition;
 
+    private UnityEngine.UI.Image image;
+
     private void Awake()
     {
+        image = GetComponent<UnityEngine.UI.Image>();
+        if ( image == null )
+        {
+            Debug.LogError( "[Note.Start] image not found." );
+            return;
+        }
+
         rectTransform = GetComponent<RectTransform>();
         if ( rectTransform == null )
         {
@@ -39,5 +48,10 @@ public class Note : MonoBehaviour
 
         // Lerp() 사용시 1.0 이상은 계산이 안됨
         rectTransform.position = spawnPosition + ( targetPosition - spawnPosition ) * rate;
+    }
+
+    public void SetVisible( bool isVisible )
+    {
+        image.enabled = isVisible;
     }
 }
