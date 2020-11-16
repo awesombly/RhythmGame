@@ -10,7 +10,8 @@ public class Line : MonoBehaviour
     public GameObject notePrefab;
 
     public Queue<Note> notes = new Queue<Note>();
-    
+    public Queue<Note> backgrountNotes = new Queue<Note>();
+
     private long[] hitableInterval = new long[ ( int )HitInfo.EHitRate.HIT_ENUM_COUNT ];
 
     public delegate void DelHitNote( Note.NoteInfo noteInfo, HitInfo.EHitRate hitRate );
@@ -25,18 +26,19 @@ public class Line : MonoBehaviour
 
     private void Update()
     {
+        // 노트 처리
         while( true )
         {
             if ( notes.Count <= 0 )
             {
-                return;
+                break;
             }
 
             Note note = notes.Peek();
             if ( note == null )
             {
                 Debug.LogError( "[Line.Update] note is null." );
-                return;
+                break;
             }
 
             // HitLine을 지나서, BAD 판정 범위로 들어올시 MISS 처리
@@ -58,12 +60,39 @@ public class Line : MonoBehaviour
                     {
                         RemoveNote( note );
                         OnHitNote?.Invoke( note.noteInfo, ( HitInfo.EHitRate )i );
-                        return;
+                        break;
                     }
                 }
             }
 
-            return;
+            break;
+        }
+
+        // 배경노트 처리
+        while ( true )
+        {
+            if ( backgrountNotes.Count <= 0 )
+            {
+                break;
+            }
+
+            Note note = backgrountNotes.Peek();
+            if ( note == null )
+            {
+                Debug.LogError( "[Line.Update] bgNote is null." );
+                break;
+            }
+
+            // HitLine을 지날시 Hit 처리
+            int interval = ( int )( GameManager.Instance.noteSpace.elapsedMilliSeconds - ( note.hitMiliSceconds + note.spawnMiliSceconds ) );
+            if ( interval >= 0 )
+            {
+                RemoveNote( note );
+                OnHitNote?.Invoke( note.noteInfo, HitInfo.EHitRate.BACKGOUND );
+                continue;
+            }
+
+            break;
         }
     }
 
@@ -86,20 +115,49 @@ public class Line : MonoBehaviour
         note.noteInfo = noteInfo;
         note.hitMiliSceconds = hitMilliSeconds;
         note.targetPosition = hitLine.position;
-        notes.Enqueue( note );
+
+        int first = noteInfo.LineNumber / 10;
+        if ( first == 1 )
+        {
+            notes.Enqueue( note );
+        }
+        else
+        {
+            backgrountNotes.Enqueue( note );
+        }
     }
 
-    public void RemoveNote( Note note )
+    public void Reset()
+    {
+        while ( notes.Count > 0 )
+        {
+            RemoveNote( notes.Peek() );
+        }
+
+        while ( backgrountNotes.Count > 0 )
+        {
+            RemoveNote( backgrountNotes.Peek() );
+        }
+    }
+
+    private void RemoveNote( Note note )
     {
         if ( note == null )
         {
             Debug.LogError( "[RemoveNote] note is null." );
-            notes.Dequeue();
             return;
         }
 
         note.gameObject.SetActive( false );
         Destroy( note.gameObject );
-        notes.Dequeue();
+
+        if ( notes.Count > 0 && notes.Peek() == note )
+        {
+            notes.Dequeue();
+        }
+        else
+        {
+            backgrountNotes.Dequeue();
+        }
     }
 }

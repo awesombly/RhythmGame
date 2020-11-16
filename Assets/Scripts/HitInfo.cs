@@ -13,6 +13,7 @@ public class HitInfo : MonoBehaviour
         BAD,
         HIT_ENUM_COUNT,
         MISS,
+        BACKGOUND,
     }
     
     public GameObject perfectDisplay;
@@ -57,6 +58,11 @@ public class HitInfo : MonoBehaviour
 
     private void OnHitNote( Note.NoteInfo noteInfo, EHitRate hitRate )
     {
+        if ( hitRate == EHitRate.BACKGOUND )
+        {
+            return;
+        }
+
         InactiveDisplays();
         remainedDisplayTime = hitDisplayTime;
 

@@ -16,8 +16,8 @@ public class MusicStatus : MonoBehaviour
         set
         {
             noteSpeed = value;
-            // 노트 생성시 4박자후 HitLine에 도착
-            noteDelayBit = ( int )( DividePerNode * 4 / noteSpeed );
+            // 노트 생성시 1박자후 HitLine에 도착
+            noteDelayBit = ( int )( DividePerNode / noteSpeed );
         }
     }
     public int noteDelayBit;

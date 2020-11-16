@@ -45,8 +45,10 @@ public class AudioManager : MonoBehaviour
         {
             return;
         }
-
-        /// + Miss일때 재생 안하도록
+        if ( hitRate == HitInfo.EHitRate.MISS )
+        {
+            return;
+        }
 
         AudioSource audioSource = GetAudioSource();
         audioSource.clip = waveClipList[ noteInfo.WaveIndex ];

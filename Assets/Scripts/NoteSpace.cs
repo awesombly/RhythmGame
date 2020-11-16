@@ -70,14 +70,9 @@ public class NoteSpace : MonoBehaviour
 
             foreach( var noteInfo in noteList )
             {
-                int first = noteInfo.LineNumber / 10;
                 int second = noteInfo.LineNumber % 10;
 
-                if ( first != 1 )
-                {
-                    continue;
-                }
-
+                // 노트가 생성되고 HitLine에 도달할때까지의 시간
                 long hitMilliSeconds = ( currentTotalBit + GameManager.Instance.musicStatus.noteDelayBit ) * milliSecondsPerBit - elapsedMilliSeconds;
                 lines[ second - 1 ].SpawnNote( noteInfo, hitMilliSeconds );
             }
@@ -103,17 +98,14 @@ public class NoteSpace : MonoBehaviour
     {
         foreach ( Line line in lines )
         {
-            while ( line.notes.Count > 0 )
-            {
-                line.RemoveNote( line.notes.Peek() );
-            }
+            line.Reset();
         }
 
         musicInfo = GameManager.Instance.musicStatus.GetMusicInfo();
         // ex) 480 = 60000 / 125
         milliSecondsPerNode = 60000 / musicInfo.Bpm;
         // ex) 15 = 480 / 32
-        milliSecondsPerBit = milliSecondsPerNode / MusicStatus.DividePerNode;
+        milliSecondsPerBit = milliSecondsPerNode / MusicStatus.DividePerNode * 4; // 임시로 4배속 처리
         currentNode = 0;
         currentBit = 0;
         currentTotalBit = 0;
@@ -127,10 +119,7 @@ public class NoteSpace : MonoBehaviour
     {
         foreach ( Line line in lines )
         {
-            while ( line.notes.Count > 0 )
-            {
-                line.RemoveNote( line.notes.Peek() );
-            }
+            line.Reset();
         }
 
         stopWatch.Reset();
