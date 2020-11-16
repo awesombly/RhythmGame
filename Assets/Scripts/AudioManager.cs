@@ -65,6 +65,7 @@ public class AudioManager : MonoBehaviour
 
         AudioSource newAudioSource = gameObject.AddComponent<AudioSource>();
         newAudioSource.playOnAwake = false;
+        newAudioSource.volume = 0.35f;
         audioSources.AddLast( newAudioSource );
 
         return newAudioSource;

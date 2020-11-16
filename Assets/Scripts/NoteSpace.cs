@@ -85,7 +85,7 @@ public class NoteSpace : MonoBehaviour
             {
                 // 노트가 생성되고 HitLine에 도달할때까지의 시간
                 long hitMilliSeconds = ( currentTotalBit + GameManager.Instance.musicStatus.noteDelayBit ) * milliSecondsPerBit - elapsedMilliSeconds;
-                lines[ noteInfo.LineIndex - 1 ].SpawnNote( noteInfo, hitMilliSeconds );
+                lines[ noteInfo.LineIndex ].SpawnNote( noteInfo, hitMilliSeconds );
             }
         }
     }
@@ -119,6 +119,12 @@ public class NoteSpace : MonoBehaviour
         foreach ( int node in musicInfo.NoteInfoList.Keys )
         {
             maxTotalBit = Mathf.Max( maxTotalBit, node * MusicStatus.DividePerNode );
+        }
+
+        for( int i = 0; i < lines.Count; ++i )
+        {
+            bool isEnable = musicInfo.enableLines.Contains( i );
+            lines[ i ].gameObject.SetActive( isEnable );
         }
 
         // ex) 480 = 60000 / 125

@@ -40,7 +40,8 @@ public class MusicStatus : MonoBehaviour
         public Dictionary< int/*index*/, string/*wave*/ > WaveList;
 
         // MainData
-        public Dictionary< int/*noteIndex*/, List< LinkedList< NoteInfo > > > NoteInfoList;
+        public Dictionary< int/*nodeIndex*/, List< LinkedList< NoteInfo > > > NoteInfoList;
+        public SortedSet<int/*lineIndex*/> enableLines;
 
         public void SetHeaderInfo( string tag, string data )
         {
@@ -121,7 +122,7 @@ public class MusicStatus : MonoBehaviour
 
             if ( NoteInfoList == null )
             {
-                NoteInfoList = new Dictionary<int/*noteIndex*/, List<LinkedList<NoteInfo>>>();
+                NoteInfoList = new Dictionary<int/*nodeIndex*/, List<LinkedList<NoteInfo>>>();
             }
 
             if ( !NoteInfoList.ContainsKey( nodeNumber ) )
@@ -135,6 +136,11 @@ public class MusicStatus : MonoBehaviour
                 noteList.Capacity = DividePerNode;
                 // 마지막 노트는 다음 마디에서 재생하므로 제외
                 noteList.AddRange( new LinkedList<NoteInfo>[ DividePerNode - 1 ] );
+            }
+
+            if ( enableLines == null )
+            {
+                enableLines = new SortedSet<int/*lineIndex*/>();
             }
 
             // noteData = 0000006E = 한 마디중 노트위치
@@ -158,8 +164,9 @@ public class MusicStatus : MonoBehaviour
 
                 NoteInfo info;
                 info.WaveIndex = waveIndex;
-                info.LineIndex = lineNumber % 10;
+                info.LineIndex = lineNumber % 10 - 1;
                 info.NoteType = ( NoteInfo.ENoteType )( lineNumber / 10 );
+                enableLines.Add( info.LineIndex );
                 noteList[ noteIndex ].AddLast( info );
             }
         }
