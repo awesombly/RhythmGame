@@ -7,8 +7,9 @@ using UnityEngine;
 
 public class MusicStatus : MonoBehaviour
 {
-    public static int DividePerNode = 32; // 한 마디를 몇 박자로 나눠 처리할건지
+    public UnityEngine.UI.Image musicImage;
 
+    public static int DividePerNode = 32; // 한 마디를 몇 박자로 나눠 처리할건지
     private float noteSpeed;
     public float NoteSpeed
     {
@@ -20,6 +21,7 @@ public class MusicStatus : MonoBehaviour
             noteDelayBit = ( int )( DividePerNode / noteSpeed );
         }
     }
+    [HideInInspector]
     public int noteDelayBit;
 
     public delegate void DelChangeNoteSpeed();
@@ -350,6 +352,23 @@ public class MusicStatus : MonoBehaviour
     private void OnSelectMusic( string title )
     {
         selectedTitle = title;
-        statusUI.SetText( GetMusicInfo( title ) );
+        MusicInfo info = GetMusicInfo( title );
+        statusUI.SetText( info );
+
+        if ( info.StageFile.Length <= 0 )
+        {
+            musicImage.sprite = null;
+            return;
+        }
+
+        string path = Path.GetFileNameWithoutExtension( info.StageFile );
+        Texture2D texture = Resources.Load( path ) as Texture2D;
+        if ( texture == null )
+        {
+            Debug.LogError( "[OnSelectMusic] texture not found. " + path );
+            return;
+        }
+
+        musicImage.sprite = Sprite.Create( texture, new Rect( 0.0f, 0.0f, texture.width, texture.height ), Vector2.zero );
     }
 }

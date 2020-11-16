@@ -25,9 +25,7 @@ public class AudioManager : MonoBehaviour
         MusicStatus.MusicInfo musicInfo = GameManager.Instance.musicStatus.GetMusicInfo();
         foreach ( var pair in musicInfo.WaveList )
         {
-            // 확장자 제거
-            string path = pair.Value.Substring( 0, pair.Value.IndexOf( '.' ) );
-
+            string path = Path.GetFileNameWithoutExtension( pair.Value );
             AudioClip audioClip = Resources.Load( path ) as AudioClip;
             if ( audioClip == null )
             {
