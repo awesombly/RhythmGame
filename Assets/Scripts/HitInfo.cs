@@ -15,7 +15,7 @@ public class HitInfo : MonoBehaviour
         MISS,
         BACKGOUND,
     }
-    
+
     public GameObject perfectDisplay;
     public GameObject goodDisplay;
     public GameObject badDisplay;
@@ -23,8 +23,27 @@ public class HitInfo : MonoBehaviour
 
     public GameObject resumeDisplay;
 
+    public GameObject comboDisplay;
+    public UnityEngine.UI.Text comboText;
+
     public float hitDisplayTime;
     private float remainedDisplayTime;
+
+    private int comboCount = 0;
+    private int ComboCount
+    {
+        get { return comboCount; }
+        set
+        {
+            comboCount = value;
+            comboText.text = comboCount.ToString();
+
+            if ( comboCount != 0 )
+            {
+                comboDisplay.SetActive( true );
+            }
+        }
+    }
 
     private void Start()
     {
@@ -44,6 +63,7 @@ public class HitInfo : MonoBehaviour
             if ( remainedDisplayTime <= 0.0f )
             {
                 InactiveDisplays();
+                comboDisplay.SetActive( false );
             }
         }
     }
@@ -70,21 +90,25 @@ public class HitInfo : MonoBehaviour
         {
             case EHitRate.PERFECT:
             {
+                ++ComboCount;
                 perfectDisplay.SetActive( true );
             } break;
 
             case EHitRate.GOOD:
             {
+                ++ComboCount;
                 goodDisplay.SetActive( true );
             } break;
 
             case EHitRate.BAD:
             {
+                ++ComboCount;
                 badDisplay.SetActive( true );
             } break;
 
             case EHitRate.MISS:
             {
+                ComboCount = 0;
                 missDisplay.SetActive( true );
             } break;
 

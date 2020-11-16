@@ -21,7 +21,7 @@ public class Line : MonoBehaviour
     private void Awake()
     {
         hitableInterval[ ( int )HitInfo.EHitRate.PERFECT ] = 75;
-        hitableInterval[ ( int )HitInfo.EHitRate.GOOD ] = 150;
+        hitableInterval[ ( int )HitInfo.EHitRate.GOOD ] = 175;
         hitableInterval[ ( int )HitInfo.EHitRate.BAD ] = 225;
     }
 
