@@ -5,8 +5,10 @@ using UnityEngine;
 public class NoteSpace : MonoBehaviour
 {
     public List<Line> lines;
+    public UnityEngine.UI.Slider progressSlider;
 
     private MusicStatus.MusicInfo musicInfo;
+    private int maxTotalBit;
     System.Diagnostics.Stopwatch stopWatch = new System.Diagnostics.Stopwatch();
 
     [HideInInspector]
@@ -103,6 +105,8 @@ public class NoteSpace : MonoBehaviour
 
         // ex) 65 = ( 2 * 32 ) + 1
         currentTotalBit = ( currentNode * MusicStatus.DividePerNode ) + currentBit;
+
+        progressSlider.value = ( float )currentTotalBit / maxTotalBit;
     }
 
     private void OnStartGame()
@@ -113,6 +117,12 @@ public class NoteSpace : MonoBehaviour
         }
 
         musicInfo = GameManager.Instance.musicStatus.GetMusicInfo();
+        maxTotalBit = 0;
+        foreach ( int node in musicInfo.NoteInfoList.Keys )
+        {
+            maxTotalBit = Mathf.Max( maxTotalBit, node * MusicStatus.DividePerNode );
+        }
+
         // ex) 480 = 60000 / 125
         milliSecondsPerNode = 60000 / musicInfo.Bpm;
         // ex) 15 = 480 / 32
