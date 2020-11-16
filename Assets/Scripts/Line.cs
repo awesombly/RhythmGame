@@ -13,7 +13,7 @@ public class Line : MonoBehaviour
     
     private long[] hitableInterval = new long[ ( int )HitInfo.EHitRate.HIT_ENUM_COUNT ];
 
-    public delegate void DelHitNote( HitInfo.EHitRate hitRate );
+    public delegate void DelHitNote( Note.NoteInfo noteInfo, HitInfo.EHitRate hitRate );
     public event DelHitNote OnHitNote;
 
     private void Awake()
@@ -44,7 +44,7 @@ public class Line : MonoBehaviour
             if ( interval > hitableInterval[ ( int )HitInfo.EHitRate.BAD - 1 ] )
             {
                 RemoveNote( note );
-                OnHitNote?.Invoke( HitInfo.EHitRate.MISS );
+                OnHitNote?.Invoke( note.noteInfo, HitInfo.EHitRate.MISS );
                 continue;
             }
 
@@ -57,7 +57,7 @@ public class Line : MonoBehaviour
                     if ( interval <= hitableInterval[ i ] )
                     {
                         RemoveNote( note );
-                        OnHitNote?.Invoke( ( HitInfo.EHitRate )i );
+                        OnHitNote?.Invoke( note.noteInfo, ( HitInfo.EHitRate )i );
                         return;
                     }
                 }
@@ -67,7 +67,7 @@ public class Line : MonoBehaviour
         }
     }
 
-    public void SpawnNote( int waveIndex, long hitMilliSeconds )
+    public void SpawnNote( Note.NoteInfo noteInfo, long hitMilliSeconds )
     {
         GameObject instance = Instantiate( notePrefab, gameObject.transform );
         if ( instance == null )
@@ -83,7 +83,7 @@ public class Line : MonoBehaviour
             return;
         }
 
-        note.waveIndex = waveIndex;
+        note.noteInfo = noteInfo;
         note.hitMiliSceconds = hitMilliSeconds;
         note.targetPosition = hitLine.position;
         notes.Enqueue( note );

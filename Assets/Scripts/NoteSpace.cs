@@ -62,16 +62,16 @@ public class NoteSpace : MonoBehaviour
                 continue;
             }
 
-            LinkedList<MusicStatus.MusicInfo.NoteInfo> noteList = musicInfo.NoteInfoList[ currentNode ][ currentBit ];
+            LinkedList<Note.NoteInfo> noteList = musicInfo.NoteInfoList[ currentNode ][ currentBit ];
             if ( noteList == null )
             {
                 continue;
             }
 
-            foreach( var note in noteList )
+            foreach( var noteInfo in noteList )
             {
-                int first = note.LineNumber / 10;
-                int second = note.LineNumber % 10;
+                int first = noteInfo.LineNumber / 10;
+                int second = noteInfo.LineNumber % 10;
 
                 if ( first != 1 )
                 {
@@ -79,7 +79,7 @@ public class NoteSpace : MonoBehaviour
                 }
 
                 long hitMilliSeconds = ( currentTotalBit + GameManager.Instance.musicStatus.noteDelayBit ) * milliSecondsPerBit - elapsedMilliSeconds;
-                lines[ second - 1 ].SpawnNote( note.WaveIndex, hitMilliSeconds );
+                lines[ second - 1 ].SpawnNote( noteInfo, hitMilliSeconds );
             }
         }
     }

@@ -4,8 +4,14 @@ using UnityEngine;
 
 public class Note : MonoBehaviour
 {
+    public struct NoteInfo
+    {
+        public int WaveIndex;
+        public int LineNumber;
+    }
+    public NoteInfo noteInfo;
+
     public RectTransform rectTransform;
-    public int waveIndex;
     public long hitMiliSceconds;
     public long spawnMiliSceconds;
 
@@ -17,7 +23,7 @@ public class Note : MonoBehaviour
         rectTransform = GetComponent<RectTransform>();
         if ( rectTransform == null )
         {
-            Debug.LogError( "[Not.Start] RectTransform not found." );
+            Debug.LogError( "[Note.Start] RectTransform not found." );
             return;
         }
 

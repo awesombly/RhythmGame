@@ -37,13 +37,8 @@ public class MusicStatus : MonoBehaviour
         public int Difficulty;
         public Dictionary< int/*index*/, string/*wave*/ > WaveList;
 
-        public struct NoteInfo
-        {
-            public int WaveIndex;
-            public int LineNumber;
-        }
         // MainData
-        public Dictionary< int/*noteIndex*/, List< LinkedList< NoteInfo > > > NoteInfoList;
+        public Dictionary< int/*noteIndex*/, List< LinkedList< Note.NoteInfo > > > NoteInfoList;
 
         public void SetHeaderInfo( string tag, string data )
         {
@@ -124,20 +119,20 @@ public class MusicStatus : MonoBehaviour
 
             if ( NoteInfoList == null )
             {
-                NoteInfoList = new Dictionary<int/*noteIndex*/, List<LinkedList<NoteInfo>>>();
+                NoteInfoList = new Dictionary<int/*noteIndex*/, List<LinkedList<Note.NoteInfo>>>();
             }
 
             if ( !NoteInfoList.ContainsKey( nodeNumber ) )
             {
-                NoteInfoList.Add( nodeNumber, new List<LinkedList<NoteInfo>>() );
+                NoteInfoList.Add( nodeNumber, new List<LinkedList<Note.NoteInfo>>() );
             }
 
-            List<LinkedList<NoteInfo>> noteList = NoteInfoList[ nodeNumber ];
+            List<LinkedList<Note.NoteInfo>> noteList = NoteInfoList[ nodeNumber ];
             if ( noteList.Count <= 0 )
             {
                 noteList.Capacity = DividePerNode;
                 // 마지막 노트는 다음 마디에서 재생하므로 제외
-                noteList.AddRange( new LinkedList<NoteInfo>[ DividePerNode - 1 ] );
+                noteList.AddRange( new LinkedList<Note.NoteInfo>[ DividePerNode - 1 ] );
             }
 
             // noteData = 0000006E = 한 마디중 노트위치
@@ -156,10 +151,10 @@ public class MusicStatus : MonoBehaviour
 
                 if ( noteList[ noteIndex ] == null )
                 {
-                    noteList[ noteIndex ] = new LinkedList<NoteInfo>();
+                    noteList[ noteIndex ] = new LinkedList<Note.NoteInfo>();
                 }
 
-                NoteInfo info;
+                Note.NoteInfo info;
                 info.WaveIndex = waveIndex;
                 info.LineNumber = lineNumber;
                 noteList[ noteIndex ].AddLast( info );

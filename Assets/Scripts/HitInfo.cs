@@ -55,7 +55,7 @@ public class HitInfo : MonoBehaviour
         missDisplay.SetActive( false );
     }
 
-    private void OnHitNote( EHitRate hitRate )
+    private void OnHitNote( Note.NoteInfo noteInfo, EHitRate hitRate )
     {
         InactiveDisplays();
         remainedDisplayTime = hitDisplayTime;
