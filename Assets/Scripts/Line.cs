@@ -7,6 +7,8 @@ public class Line : MonoBehaviour
 {
     public KeyCode hitKeyCode;
     public RectTransform hitLine;
+    public UnityEngine.UI.Image inputEffect;
+
     public GameObject notePrefab;
     public GameObject bgNotePrefab;
 
@@ -32,8 +34,10 @@ public class Line : MonoBehaviour
 
     private void Update()
     {
+        inputEffect.enabled = Input.GetKey( hitKeyCode );
+
         // 노트 처리
-        while( true )
+        while ( true )
         {
             if ( notes.Count <= 0 )
             {
@@ -74,7 +78,7 @@ public class Line : MonoBehaviour
             break;
         }
 
-        // 배경노트 처리
+        // 배경음 노트 처리
         while ( true )
         {
             if ( backgrountNotes.Count <= 0 )

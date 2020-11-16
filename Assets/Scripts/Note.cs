@@ -11,10 +11,14 @@ public class Note : MonoBehaviour
     }
     public NoteInfo noteInfo;
 
+    [HideInInspector]
     public RectTransform rectTransform;
+    [HideInInspector]
     public long hitMiliSceconds;
+    [HideInInspector]
     public long spawnMiliSceconds;
 
+    [HideInInspector]
     public Vector3 targetPosition;
     private Vector3 spawnPosition;
 
