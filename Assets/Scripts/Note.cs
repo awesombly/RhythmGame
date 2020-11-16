@@ -2,13 +2,29 @@
 using System.Collections.Generic;
 using UnityEngine;
 
+public struct NoteInfo
+{
+    public enum ENoteType
+    {
+        BACKGROUND = 0,
+        NORMAL = 1,
+        NORMAL2,
+        NORMAL3,
+        NORMAL4,
+        NORMAL5,
+        NORMAL6,
+        NORMAL7,
+        NORMAL8,
+        NORMAL9,
+    }
+
+    public int WaveIndex;
+    public int LineIndex;
+    public ENoteType NoteType;
+}
+
 public class Note : MonoBehaviour
 {
-    public struct NoteInfo
-    {
-        public int WaveIndex;
-        public int LineNumber;
-    }
     public NoteInfo noteInfo;
 
     [HideInInspector]

@@ -76,7 +76,7 @@ public class HitInfo : MonoBehaviour
         missDisplay.SetActive( false );
     }
 
-    private void OnHitNote( Note.NoteInfo noteInfo, EHitRate hitRate )
+    private void OnHitNote( NoteInfo noteInfo, EHitRate hitRate )
     {
         if ( hitRate == EHitRate.BACKGOUND )
         {

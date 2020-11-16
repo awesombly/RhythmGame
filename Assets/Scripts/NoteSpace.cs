@@ -75,7 +75,7 @@ public class NoteSpace : MonoBehaviour
                 continue;
             }
 
-            LinkedList<Note.NoteInfo> noteList = musicInfo.NoteInfoList[ currentNode ][ currentBit ];
+            LinkedList<NoteInfo> noteList = musicInfo.NoteInfoList[ currentNode ][ currentBit ];
             if ( noteList == null )
             {
                 continue;
@@ -83,11 +83,9 @@ public class NoteSpace : MonoBehaviour
 
             foreach( var noteInfo in noteList )
             {
-                int lineNumber = noteInfo.LineNumber % 10;
-
                 // 노트가 생성되고 HitLine에 도달할때까지의 시간
                 long hitMilliSeconds = ( currentTotalBit + GameManager.Instance.musicStatus.noteDelayBit ) * milliSecondsPerBit - elapsedMilliSeconds;
-                lines[ lineNumber - 1 ].SpawnNote( noteInfo, hitMilliSeconds );
+                lines[ noteInfo.LineIndex - 1 ].SpawnNote( noteInfo, hitMilliSeconds );
             }
         }
     }

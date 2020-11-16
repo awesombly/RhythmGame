@@ -37,7 +37,7 @@ public class AudioManager : MonoBehaviour
         }
     }
 
-    private void OnHitNote( Note.NoteInfo noteInfo, HitInfo.EHitRate hitRate )
+    private void OnHitNote( NoteInfo noteInfo, HitInfo.EHitRate hitRate )
     {
         if ( !waveClipList.ContainsKey( noteInfo.WaveIndex ) )
         {

@@ -18,7 +18,7 @@ public class Line : MonoBehaviour
 
     private long[] hitableInterval = new long[ ( int )HitInfo.EHitRate.HIT_ENUM_COUNT ];
 
-    public delegate void DelHitNote( Note.NoteInfo noteInfo, HitInfo.EHitRate hitRate );
+    public delegate void DelHitNote( NoteInfo noteInfo, HitInfo.EHitRate hitRate );
     public event DelHitNote OnHitNote;
 
     private void Awake()
@@ -108,11 +108,10 @@ public class Line : MonoBehaviour
         }
     }
 
-    public void SpawnNote( Note.NoteInfo noteInfo, long hitMilliSeconds )
+    public void SpawnNote( NoteInfo noteInfo, long hitMilliSeconds )
     {
-        int firstIndex = noteInfo.LineNumber / 10;
         /// + 라인따라 프리팹 별도 적용
-        GameObject prefab = ( firstIndex == 1 ? notePrefab : bgNotePrefab );
+        GameObject prefab = ( noteInfo.NoteType != NoteInfo.ENoteType.BACKGROUND ? notePrefab : bgNotePrefab );
 
         GameObject instance = Instantiate( prefab, gameObject.transform );
         if ( instance == null )
@@ -132,7 +131,7 @@ public class Line : MonoBehaviour
         note.hitMiliSceconds = hitMilliSeconds;
         note.targetPosition = hitLine.position;
 
-        if ( firstIndex == 1 )
+        if ( noteInfo.NoteType != NoteInfo.ENoteType.BACKGROUND )
         {
             notes.Enqueue( note );
             note.SetVisible( true );
@@ -178,7 +177,7 @@ public class Line : MonoBehaviour
         }
     }
 
-    private void SpawnHitEffect( Note.NoteInfo noteInfo, HitInfo.EHitRate hitRate )
+    private void SpawnHitEffect( NoteInfo noteInfo, HitInfo.EHitRate hitRate )
     {
         if ( hitRate == HitInfo.EHitRate.BACKGOUND
             || hitRate == HitInfo.EHitRate.MISS )
