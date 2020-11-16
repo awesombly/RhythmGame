@@ -83,11 +83,11 @@ public class NoteSpace : MonoBehaviour
 
             foreach( var noteInfo in noteList )
             {
-                int second = noteInfo.LineNumber % 10;
+                int lineNumber = noteInfo.LineNumber % 10;
 
                 // 노트가 생성되고 HitLine에 도달할때까지의 시간
                 long hitMilliSeconds = ( currentTotalBit + GameManager.Instance.musicStatus.noteDelayBit ) * milliSecondsPerBit - elapsedMilliSeconds;
-                lines[ second - 1 ].SpawnNote( noteInfo, hitMilliSeconds );
+                lines[ lineNumber - 1 ].SpawnNote( noteInfo, hitMilliSeconds );
             }
         }
     }

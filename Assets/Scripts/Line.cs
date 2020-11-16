@@ -11,6 +11,7 @@ public class Line : MonoBehaviour
 
     public GameObject notePrefab;
     public GameObject bgNotePrefab;
+    public GameObject hitEffectPrefab;
 
     public Queue<Note> notes = new Queue<Note>();
     public Queue<Note> backgrountNotes = new Queue<Note>();
@@ -30,6 +31,7 @@ public class Line : MonoBehaviour
     private void Start()
     {
         GameManager.Instance.noteSpace.OnVisibleBgNote += OnVisibleBgNote;
+        OnHitNote += SpawnHitEffect;
     }
 
     private void Update()
@@ -176,7 +178,18 @@ public class Line : MonoBehaviour
         }
     }
 
-    void OnVisibleBgNote( bool isVisible )
+    private void SpawnHitEffect( Note.NoteInfo noteInfo, HitInfo.EHitRate hitRate )
+    {
+        if ( hitRate == HitInfo.EHitRate.BACKGOUND
+            || hitRate == HitInfo.EHitRate.MISS )
+        {
+            return;
+        }
+
+        Instantiate( hitEffectPrefab, hitLine.transform );
+    }
+
+    private void OnVisibleBgNote( bool isVisible )
     {
         foreach ( Note note in backgrountNotes )
         {
