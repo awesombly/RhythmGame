@@ -11,6 +11,7 @@ public class NoteSpace : MonoBehaviour
         public List<KeyCode> KeyCodes;
     }
     public List<KeyInfo> keyInfos;
+    public List<Color> lineColors;
 
     public List<Line> lines;
     public UnityEngine.UI.Slider progressSlider;
@@ -140,9 +141,22 @@ public class NoteSpace : MonoBehaviour
                 bool isEnable = musicInfo.enableLines.Contains( i );
                 lines[ i ].gameObject.SetActive( isEnable );
 
-                if ( isEnable && keyInfo.KeyCodes != null )
+                if ( isEnable )
                 {
+                    if ( keyInfo.KeyCodes == null )
+                    {
+                        Debug.LogError( "[OnStartGame] keyCodes is null. lineCount = " + musicInfo.enableLines.Count );
+                        continue;
+                    }
+
                     lines[ i ].keyCode = keyInfo.KeyCodes[ enableLineIndex ];
+
+                    UnityEngine.UI.Image image = lines[ i ].GetComponent<UnityEngine.UI.Image>();
+                    if ( image != null )
+                    {
+                        image.color = lineColors[ enableLineIndex % lineColors.Count ];
+                    }
+
                     ++enableLineIndex;
                 }
             }
