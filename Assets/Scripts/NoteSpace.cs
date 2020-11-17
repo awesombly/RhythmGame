@@ -17,6 +17,14 @@ public class NoteSpace : MonoBehaviour
     public UnityEngine.UI.Slider progressSlider;
 
     [Serializable]
+    public struct HitRateForUI
+    {
+        public HitInfo.EHitRate HitRate;
+        public UnityEngine.UI.Text CountText;
+    }
+    public List<HitRateForUI> hitRateTexts;
+
+    [Serializable]
     public struct ScoreInfo
     {
         public HitInfo.EHitRate HitRate;
@@ -161,6 +169,11 @@ public class NoteSpace : MonoBehaviour
             maxTotalBit = Mathf.Max( maxTotalBit, node * MusicStatus.DividePerNode );
         }
 
+        foreach ( HitRateForUI info in hitRateTexts )
+        {
+            info.CountText.text = "0";
+        }
+
         // 라인 활성화, 키설정
         {
             KeyInfo keyInfo = keyInfos.Find( info => { return info.KeyCodes.Count == musicInfo.EnableLines.Count; } );
@@ -228,6 +241,8 @@ public class NoteSpace : MonoBehaviour
             currentHitCounts.Add( hitRate, 0 );
         }
         ++currentHitCounts[ hitRate ];
+        HitRateForUI hitForUI = hitRateTexts.Find( info => { return info.HitRate == hitRate; } );
+        hitForUI.CountText.text = currentHitCounts[ hitRate ].ToString();
 
         ScoreInfo scoreInfo = scoreByHitRate.Find( info => { return info.HitRate == hitRate; } );
 
