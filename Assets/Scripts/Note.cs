@@ -11,7 +11,7 @@ public struct NoteInfo
         NORMAL2,
         NORMAL3,
         NORMAL4,
-        NORMAL5,
+        LONG,
         NORMAL6,
         NORMAL7,
         NORMAL8,

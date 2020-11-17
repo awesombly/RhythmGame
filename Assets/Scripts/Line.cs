@@ -11,12 +11,15 @@ public class Line : MonoBehaviour
 
     public GameObject notePrefab;
     public GameObject bgNotePrefab;
+    public GameObject longNotePrefab;
+    public GameObject longNoteBodyPrefab;
     public GameObject hitEffectPrefab;
 
     public Queue<Note> notes = new Queue<Note>();
     public Queue<Note> backgrountNotes = new Queue<Note>();
 
     private long[] hitableInterval = new long[ ( int )HitInfo.EHitRate.HIT_ENUM_COUNT ];
+    private Note currentLongNote;
 
     public delegate void DelHitNote( NoteInfo noteInfo, HitInfo.EHitRate hitRate );
     public event DelHitNote OnHitNote;
@@ -57,24 +60,24 @@ public class Line : MonoBehaviour
             int interval = ( int )( GameManager.Instance.noteSpace.elapsedMilliSeconds - ( note.hitMiliSceconds + note.spawnMiliSceconds ) );
             if ( interval > hitableInterval[ ( int )HitInfo.EHitRate.BAD - 1 ] )
             {
-                RemoveNote( note );
-                OnHitNote?.Invoke( note.noteInfo, HitInfo.EHitRate.MISS );
-                continue;
-            }
-
-            if ( Input.GetKeyDown( keyCode ) )
-            {
-                interval = Mathf.Abs( interval );
-
-                for ( int i = 0; i < hitableInterval.Length; ++i )
-                {
-                    if ( interval <= hitableInterval[ i ] )
-                    {
                         RemoveNote( note );
-                        OnHitNote?.Invoke( note.noteInfo, ( HitInfo.EHitRate )i );
-                        break;
+                        OnHitNote?.Invoke( note.noteInfo, HitInfo.EHitRate.MISS );
+                        continue;
                     }
-                }
+
+                    if ( Input.GetKeyDown( keyCode ) )
+                    {
+                        interval = Mathf.Abs( interval );
+
+                        for ( int i = 0; i < hitableInterval.Length; ++i )
+                        {
+                            if ( interval <= hitableInterval[ i ] )
+                            {
+                                RemoveNote( note );
+                                OnHitNote?.Invoke( note.noteInfo, ( HitInfo.EHitRate )i );
+                                break;
+                            }
+                        }
             }
 
             break;
@@ -106,12 +109,30 @@ public class Line : MonoBehaviour
 
             break;
         }
+
+        if ( currentLongNote != null )
+        {
+            currentLongNote.rectTransform.offsetMax = new Vector2( currentLongNote.rectTransform.offsetMax.x, gameObject.transform.position.y - currentLongNote.rectTransform.position.y );
+        }
     }
 
     public void SpawnNote( NoteInfo noteInfo, long hitMilliSeconds )
     {
-        /// + 라인따라 프리팹 별도 적용
-        GameObject prefab = ( noteInfo.NoteType != NoteInfo.ENoteType.BACKGROUND ? notePrefab : bgNotePrefab );
+        GameObject prefab = notePrefab;
+        switch ( noteInfo.NoteType )
+        {
+            case NoteInfo.ENoteType.BACKGROUND:
+            {
+                prefab = bgNotePrefab;
+            }
+            break;
+
+            case NoteInfo.ENoteType.LONG:
+            {
+                prefab = longNotePrefab;
+            }
+            break;
+        }
 
         GameObject instance = Instantiate( prefab, gameObject.transform );
         if ( instance == null )
@@ -131,15 +152,55 @@ public class Line : MonoBehaviour
         note.hitMiliSceconds = hitMilliSeconds;
         note.targetPosition = hitLine.position;
 
-        if ( noteInfo.NoteType != NoteInfo.ENoteType.BACKGROUND )
+        switch ( noteInfo.NoteType )
         {
-            notes.Enqueue( note );
-            note.SetVisible( true );
-        }
-        else
-        {
-            backgrountNotes.Enqueue( note );
-            note.SetVisible( GameManager.Instance.noteSpace.isVisibleBgNote );
+            case NoteInfo.ENoteType.BACKGROUND:
+            {
+                backgrountNotes.Enqueue( note );
+                note.SetVisible( GameManager.Instance.noteSpace.isVisibleBgNote );
+            }
+            break;
+
+            case NoteInfo.ENoteType.LONG:
+            {
+                notes.Enqueue( note );
+
+                if ( currentLongNote == null )
+                {
+                    GameObject longNoteInstance = Instantiate( longNoteBodyPrefab, gameObject.transform );
+                    if ( longNoteInstance == null )
+                    {
+                        Debug.LogError( "[SapwnNote] longNoteInstance is null." );
+                        return;
+                    }
+
+                    Note longNote = longNoteInstance.GetComponent<Note>();
+                    if ( longNote == null )
+                    {
+                        Debug.LogError( "[SpawnNote] longNote is null." );
+                        return;
+                    }
+
+                    longNote.noteInfo = noteInfo;
+                    longNote.hitMiliSceconds = hitMilliSeconds;
+                    longNote.targetPosition = hitLine.position;
+
+                    currentLongNote = longNote;
+                    //notes.Enqueue( longNote );
+                }
+                else
+                {
+                    currentLongNote.rectTransform.offsetMax = new Vector2( currentLongNote.rectTransform.offsetMax.x, note.rectTransform.position.y - currentLongNote.rectTransform.position.y );
+                    currentLongNote = null;
+                }
+            }
+            break;
+
+            default:
+            {
+                notes.Enqueue( note );
+            }
+            break;
         }
     }
 

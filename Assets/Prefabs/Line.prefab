@@ -165,11 +165,13 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: f77e0cd5471eb5645a8502aa4891e2e2, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  hitKeyCode: 97
+  keyCode: 0
   hitLine: {fileID: 8112430504863926453}
   inputEffect: {fileID: 3249961781570360648}
   notePrefab: {fileID: 5781028892451886597, guid: 4e343bb484e38314c9a6fbeb8e79816c, type: 3}
   bgNotePrefab: {fileID: 4558334220078191539, guid: 991be07ec71e5b74796c67112fc9e413, type: 3}
+  longNotePrefab: {fileID: 5781028892451886597, guid: 782ab23e295f2d9418753d2dfdbcbb20, type: 3}
+  longNoteBodyPrefab: {fileID: 5781028892451886597, guid: 782ab23e295f2d9418753d2dfdbcbb20, type: 3}
   hitEffectPrefab: {fileID: 8219372761926766866, guid: a929e2b3c2b15c948b2f23914103911c, type: 3}
 --- !u!1 &7072396454879369280
 GameObject:
