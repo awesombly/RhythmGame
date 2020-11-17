@@ -36,11 +36,12 @@ public class MusicStatus : MonoBehaviour
         public int Bpm;
         public int Level;
         public int Difficulty;
-        public Dictionary< int/*index*/, string/*wave*/ > WaveList;
+        public Dictionary<int/*index*/, string/*wave*/ > WaveList;
 
         // MainData
-        public Dictionary< int/*nodeIndex*/, List< LinkedList< NoteInfo > > > NoteInfoList;
-        public SortedSet<int/*lineIndex*/> enableLines;
+        public Dictionary<int/*nodeIndex*/, List<LinkedList<NoteInfo>>> NoteInfoList;
+        public SortedSet<int/*lineIndex*/> EnableLines;
+        public int TotalNoteCount;
 
         public void SetHeaderInfo( string tag, string data )
         {
@@ -137,9 +138,9 @@ public class MusicStatus : MonoBehaviour
                 noteList.AddRange( new LinkedList<NoteInfo>[ DividePerNode - 1 ] );
             }
 
-            if ( enableLines == null )
+            if ( EnableLines == null )
             {
-                enableLines = new SortedSet<int/*lineIndex*/>();
+                EnableLines = new SortedSet<int/*lineIndex*/>();
             }
 
             // noteData = 0000006E = 한 마디중 노트위치
@@ -165,7 +166,11 @@ public class MusicStatus : MonoBehaviour
                 info.WaveIndex = waveIndex;
                 info.LineIndex = lineNumber % 10 - 1;
                 info.NoteType = ( NoteInfo.ENoteType )( lineNumber / 10 );
-                enableLines.Add( info.LineIndex );
+                if ( info.NoteType != NoteInfo.ENoteType.BACKGROUND )
+                {
+                    ++TotalNoteCount;
+                    EnableLines.Add( info.LineIndex );
+                }
                 noteList[ noteIndex ].AddLast( info );
             }
         }

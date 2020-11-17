@@ -47,7 +47,7 @@ public class HitInfo : MonoBehaviour
 
     private void Start()
     {
-        foreach( Line line in GameManager.Instance.noteSpace.lines )
+        foreach ( Line line in GameManager.Instance.noteSpace.lines )
         {
             line.OnHitNote += OnHitNote;
         }
@@ -92,30 +92,35 @@ public class HitInfo : MonoBehaviour
             {
                 ++ComboCount;
                 perfectDisplay.SetActive( true );
-            } break;
+            }
+            break;
 
             case EHitRate.GOOD:
             {
                 ++ComboCount;
                 goodDisplay.SetActive( true );
-            } break;
+            }
+            break;
 
             case EHitRate.BAD:
             {
                 ++ComboCount;
                 badDisplay.SetActive( true );
-            } break;
+            }
+            break;
 
             case EHitRate.MISS:
             {
                 ComboCount = 0;
                 missDisplay.SetActive( true );
-            } break;
+            }
+            break;
 
             default:
             {
                 UnityEngine.Debug.LogError( "[OnHitNote] invalid hitRate. " + hitRate );
-            } break;
+            }
+            break;
         }
     }
 

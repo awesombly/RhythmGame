@@ -16,8 +16,30 @@ public class NoteSpace : MonoBehaviour
     public List<Line> lines;
     public UnityEngine.UI.Slider progressSlider;
 
+    [Serializable]
+    public struct ScoreInfo
+    {
+        public HitInfo.EHitRate HitRate;
+        public double ScoreRate;
+    }
+    public List<ScoreInfo> scoreByHitRate;
+    public UnityEngine.UI.Text scoreText;
+    public double maxScore;
+    private double currentScore;
+    private double CurrentScore
+    {
+        get { return currentScore; }
+        set
+        {
+            currentScore = value;
+            // 소수점 없는 자릿수 구분 표기. ex) 123,456
+            scoreText.text = Mathf.RoundToInt( ( float )currentScore ).ToString( "N0" );
+        }
+    }
+
     private MusicStatus.MusicInfo musicInfo;
     private int maxTotalBit;
+    private Dictionary<HitInfo.EHitRate, int/*count*/> currentHitCounts = new Dictionary<HitInfo.EHitRate, int/*count*/>();
     System.Diagnostics.Stopwatch stopWatch = new System.Diagnostics.Stopwatch();
 
     [HideInInspector]
@@ -41,6 +63,12 @@ public class NoteSpace : MonoBehaviour
     {
         GameManager.Instance.OnStartGame += OnStartGame;
         GameManager.Instance.OnEndGame += OnEndGame;
+
+        foreach ( Line line in GameManager.Instance.noteSpace.lines )
+        {
+            line.OnHitNote += OnHitNote;
+        }
+
         gameObject.SetActive( false );
     }
 
@@ -78,7 +106,7 @@ public class NoteSpace : MonoBehaviour
         while ( currentTotalBit < elapsedBit )
         {
             AddBitCount( 1 );
-            
+
             if ( !musicInfo.NoteInfoList.ContainsKey( currentNode ) )
             {
                 continue;
@@ -90,7 +118,7 @@ public class NoteSpace : MonoBehaviour
                 continue;
             }
 
-            foreach( var noteInfo in noteList )
+            foreach ( var noteInfo in noteList )
             {
                 // 노트가 생성되고 HitLine에 도달할때까지의 시간
                 long hitMilliSeconds = ( currentTotalBit + GameManager.Instance.musicStatus.noteDelayBit ) * milliSecondsPerBit - elapsedMilliSeconds;
@@ -123,8 +151,10 @@ public class NoteSpace : MonoBehaviour
             line.Reset();
         }
 
+        CurrentScore = 0;
+        currentHitCounts.Clear();
         musicInfo = GameManager.Instance.musicStatus.GetMusicInfo();
-
+        
         maxTotalBit = 0;
         foreach ( int node in musicInfo.NoteInfoList.Keys )
         {
@@ -133,19 +163,19 @@ public class NoteSpace : MonoBehaviour
 
         // 라인 활성화, 키설정
         {
-            KeyInfo keyInfo = keyInfos.Find( info => { return info.KeyCodes.Count == musicInfo.enableLines.Count; } );
+            KeyInfo keyInfo = keyInfos.Find( info => { return info.KeyCodes.Count == musicInfo.EnableLines.Count; } );
 
             int enableLineIndex = 0;
             for ( int i = 0; i < lines.Count; ++i )
             {
-                bool isEnable = musicInfo.enableLines.Contains( i );
+                bool isEnable = musicInfo.EnableLines.Contains( i );
                 lines[ i ].gameObject.SetActive( isEnable );
 
                 if ( isEnable )
                 {
                     if ( keyInfo.KeyCodes == null )
                     {
-                        Debug.LogError( "[OnStartGame] keyCodes is null. lineCount = " + musicInfo.enableLines.Count );
+                        Debug.LogError( "[OnStartGame] keyCodes is null. lineCount = " + musicInfo.EnableLines.Count );
                         continue;
                     }
 
@@ -184,5 +214,23 @@ public class NoteSpace : MonoBehaviour
 
         stopWatch.Reset();
         OnChangeResume?.Invoke( false );
+    }
+
+    private void OnHitNote( NoteInfo noteInfo, HitInfo.EHitRate hitRate )
+    {
+        if ( hitRate == HitInfo.EHitRate.BACKGOUND )
+        {
+            return;
+        }
+
+        if ( !currentHitCounts.ContainsKey( hitRate ) )
+        {
+            currentHitCounts.Add( hitRate, 0 );
+        }
+        ++currentHitCounts[ hitRate ];
+
+        ScoreInfo scoreInfo = scoreByHitRate.Find( info => { return info.HitRate == hitRate; } );
+
+        CurrentScore += ( maxScore / musicInfo.TotalNoteCount ) * scoreInfo.ScoreRate;
     }
 }
