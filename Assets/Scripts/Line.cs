@@ -5,7 +5,7 @@ using UnityEngine.Playables;
 
 public class Line : MonoBehaviour
 {
-    public KeyCode hitKeyCode;
+    public KeyCode keyCode;
     public RectTransform hitLine;
     public UnityEngine.UI.Image inputEffect;
 
@@ -36,7 +36,7 @@ public class Line : MonoBehaviour
 
     private void Update()
     {
-        inputEffect.enabled = Input.GetKey( hitKeyCode );
+        inputEffect.enabled = Input.GetKey( keyCode );
 
         // 노트 처리
         while ( true )
@@ -62,7 +62,7 @@ public class Line : MonoBehaviour
                 continue;
             }
 
-            if ( Input.GetKeyDown( hitKeyCode ) )
+            if ( Input.GetKeyDown( keyCode ) )
             {
                 interval = Mathf.Abs( interval );
 

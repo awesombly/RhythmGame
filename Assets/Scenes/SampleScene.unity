@@ -2946,7 +2946,7 @@ MonoBehaviour:
   m_TargetGraphic: {fileID: 849671658}
   m_HandleRect: {fileID: 849671657}
   m_Direction: 0
-  m_Value: 0
+  m_Value: 1
   m_Size: 1
   m_NumberOfSteps: 0
   m_OnValueChanged:
@@ -3905,7 +3905,7 @@ RectTransform:
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
   m_AnchorMin: {x: 0, y: 0}
   m_AnchorMax: {x: 1, y: 1}
-  m_AnchoredPosition: {x: 9.699908, y: 0}
+  m_AnchoredPosition: {x: -0.000076293945, y: 0}
   m_SizeDelta: {x: -9.699951, y: 0}
   m_Pivot: {x: 0, y: 1}
 --- !u!114 &1616780182
@@ -5280,6 +5280,14 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 4502ebefa6f9dba4f99dc5b35d674f29, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
+  keyInfos:
+  - KeyCodes: 61000000730000003b00000027000000
+  - KeyCodes: 6100000073000000640000003b00000027000000
+  - KeyCodes: 6100000073000000640000006c0000003b00000027000000
+  - KeyCodes: 610000007300000064000000660000006c0000003b00000027000000
+  - KeyCodes: 610000007300000064000000660000006b0000006c0000003b00000027000000
+  - KeyCodes: 61000000730000006400000066000000670000006b0000006c0000003b00000027000000
+  - KeyCodes: 61000000730000006400000066000000670000006a0000006b0000006c0000003b00000027000000
   lines:
   - {fileID: 1004093850}
   - {fileID: 572446616}

@@ -1,9 +1,17 @@
-﻿using System.Collections;
+﻿using System;
+using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
 
 public class NoteSpace : MonoBehaviour
 {
+    [Serializable]
+    public struct KeyInfo
+    {
+        public List<KeyCode> KeyCodes;
+    }
+    public List<KeyInfo> keyInfos;
+
     public List<Line> lines;
     public UnityEngine.UI.Slider progressSlider;
 
@@ -115,16 +123,29 @@ public class NoteSpace : MonoBehaviour
         }
 
         musicInfo = GameManager.Instance.musicStatus.GetMusicInfo();
+
         maxTotalBit = 0;
         foreach ( int node in musicInfo.NoteInfoList.Keys )
         {
             maxTotalBit = Mathf.Max( maxTotalBit, node * MusicStatus.DividePerNode );
         }
 
-        for( int i = 0; i < lines.Count; ++i )
+        // 라인 활성화, 키설정
         {
-            bool isEnable = musicInfo.enableLines.Contains( i );
-            lines[ i ].gameObject.SetActive( isEnable );
+            KeyInfo keyInfo = keyInfos.Find( info => { return info.KeyCodes.Count == musicInfo.enableLines.Count; } );
+
+            int enableLineIndex = 0;
+            for ( int i = 0; i < lines.Count; ++i )
+            {
+                bool isEnable = musicInfo.enableLines.Contains( i );
+                lines[ i ].gameObject.SetActive( isEnable );
+
+                if ( isEnable && keyInfo.KeyCodes != null )
+                {
+                    lines[ i ].keyCode = keyInfo.KeyCodes[ enableLineIndex ];
+                    ++enableLineIndex;
+                }
+            }
         }
 
         // ex) 480 = 60000 / 125
