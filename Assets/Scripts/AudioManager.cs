@@ -39,11 +39,13 @@ public class AudioManager : MonoBehaviour
 
     private void OnHitNote( NoteInfo noteInfo, HitInfo.EHitRate hitRate )
     {
-        if ( !waveClipList.ContainsKey( noteInfo.WaveIndex ) )
+        if ( hitRate == HitInfo.EHitRate.MISS
+            || hitRate == HitInfo.EHitRate.DUMMY )
         {
             return;
         }
-        if ( hitRate == HitInfo.EHitRate.MISS )
+
+        if ( !waveClipList.ContainsKey( noteInfo.WaveIndex ) )
         {
             return;
         }

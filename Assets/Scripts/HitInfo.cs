@@ -14,6 +14,7 @@ public class HitInfo : MonoBehaviour
         HIT_ENUM_COUNT,
         MISS,
         BACKGOUND,
+        DUMMY,
     }
 
     public GameObject perfectDisplay;
@@ -83,7 +84,10 @@ public class HitInfo : MonoBehaviour
             return;
         }
 
-        InactiveDisplays();
+        if ( hitRate != EHitRate.DUMMY )
+        {
+            InactiveDisplays();
+        }
         remainedDisplayTime = hitDisplayTime;
 
         switch ( hitRate )
@@ -106,6 +110,12 @@ public class HitInfo : MonoBehaviour
             {
                 ++ComboCount;
                 badDisplay.SetActive( true );
+            }
+            break;
+
+            case EHitRate.DUMMY:
+            {
+                ++ComboCount;
             }
             break;
 

@@ -53,7 +53,8 @@ public class NoteSpace : MonoBehaviour
     [HideInInspector]
     public long elapsedMilliSeconds;
     private long milliSecondsPerNode;
-    private long milliSecondsPerBit;
+    [HideInInspector]
+    public long milliSecondsPerBit;
 
     private int currentNode;
     private int currentBit;
@@ -231,7 +232,8 @@ public class NoteSpace : MonoBehaviour
 
     private void OnHitNote( NoteInfo noteInfo, HitInfo.EHitRate hitRate )
     {
-        if ( hitRate == HitInfo.EHitRate.BACKGOUND )
+        if ( hitRate == HitInfo.EHitRate.BACKGOUND
+            || hitRate == HitInfo.EHitRate.DUMMY )
         {
             return;
         }

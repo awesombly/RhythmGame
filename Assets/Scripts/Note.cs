@@ -16,6 +16,8 @@ public struct NoteInfo
         NORMAL7,
         NORMAL8,
         NORMAL9,
+        LONG_BODY,
+        LONG_END,
     }
 
     public int WaveIndex;
@@ -26,6 +28,7 @@ public struct NoteInfo
 public class Note : MonoBehaviour
 {
     public NoteInfo noteInfo;
+    public Note linkedNote;
 
     [HideInInspector]
     public RectTransform rectTransform;

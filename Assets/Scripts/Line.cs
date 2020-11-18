@@ -17,9 +17,11 @@ public class Line : MonoBehaviour
 
     public Queue<Note> notes = new Queue<Note>();
     public Queue<Note> backgrountNotes = new Queue<Note>();
+    public Queue<Note> longNotes = new Queue<Note>();
 
     private long[] hitableInterval = new long[ ( int )HitInfo.EHitRate.HIT_ENUM_COUNT ];
     private Note currentLongNote;
+    private long prevLongNoteHitTime = 0;
 
     public delegate void DelHitNote( NoteInfo noteInfo, HitInfo.EHitRate hitRate );
     public event DelHitNote OnHitNote;
@@ -57,27 +59,37 @@ public class Line : MonoBehaviour
             }
 
             // HitLine을 지나서, BAD 판정 범위로 들어올시 MISS 처리
-            int interval = ( int )( GameManager.Instance.noteSpace.elapsedMilliSeconds - ( note.hitMiliSceconds + note.spawnMiliSceconds ) );
+            long interval = GameManager.Instance.noteSpace.elapsedMilliSeconds - ( note.hitMiliSceconds + note.spawnMiliSceconds );
             if ( interval > hitableInterval[ ( int )HitInfo.EHitRate.BAD - 1 ] )
             {
-                        RemoveNote( note );
-                        OnHitNote?.Invoke( note.noteInfo, HitInfo.EHitRate.MISS );
-                        continue;
-                    }
+                RemoveNote( note );
+                OnHitNote?.Invoke( note.noteInfo, HitInfo.EHitRate.MISS );
+                continue;
+            }
 
-                    if ( Input.GetKeyDown( keyCode ) )
+            bool isKeyInput = false;
+            if ( note.noteInfo.NoteType == NoteInfo.ENoteType.LONG_END )
+            {
+                isKeyInput = Input.GetKeyUp( keyCode );
+            }
+            else
+            {
+                isKeyInput = Input.GetKeyDown( keyCode );
+            }
+
+            if ( isKeyInput )
+            {
+                interval = Mathf.Abs( ( int )interval );
+
+                for ( int i = 0; i < hitableInterval.Length; ++i )
+                {
+                    if ( interval <= hitableInterval[ i ] )
                     {
-                        interval = Mathf.Abs( interval );
-
-                        for ( int i = 0; i < hitableInterval.Length; ++i )
-                        {
-                            if ( interval <= hitableInterval[ i ] )
-                            {
-                                RemoveNote( note );
-                                OnHitNote?.Invoke( note.noteInfo, ( HitInfo.EHitRate )i );
-                                break;
-                            }
-                        }
+                        RemoveNote( note );
+                        OnHitNote?.Invoke( note.noteInfo, ( HitInfo.EHitRate )i );
+                        break;
+                    }
+                }
             }
 
             break;
@@ -99,12 +111,45 @@ public class Line : MonoBehaviour
             }
 
             // HitLine을 지날시 Hit 처리
-            int interval = ( int )( GameManager.Instance.noteSpace.elapsedMilliSeconds - ( note.hitMiliSceconds + note.spawnMiliSceconds ) );
+            long interval = GameManager.Instance.noteSpace.elapsedMilliSeconds - ( note.hitMiliSceconds + note.spawnMiliSceconds );
             if ( interval >= 0 )
             {
                 RemoveNote( note );
                 OnHitNote?.Invoke( note.noteInfo, HitInfo.EHitRate.BACKGOUND );
                 continue;
+            }
+
+            break;
+        }
+
+        // 롱노트바디 처리
+        while ( true )
+        {
+            if ( longNotes.Count <= 0 )
+            {
+                break;
+            }
+
+            Note note = longNotes.Peek();
+            if ( note == null )
+            {
+                Debug.LogError( "[Line.Update] longNote is null." );
+                break;
+            }
+
+            if ( Input.GetKey( keyCode ) )
+            {
+                // HitLine 지나고, 키 입력중일시 콤보 처리
+                long interval = GameManager.Instance.noteSpace.elapsedMilliSeconds - ( note.hitMiliSceconds + note.spawnMiliSceconds );
+                if ( interval >= 0 )
+                {
+                    long deltaTime = GameManager.Instance.noteSpace.elapsedMilliSeconds - prevLongNoteHitTime;
+                    if ( deltaTime >= GameManager.Instance.noteSpace.milliSecondsPerBit )
+                    {
+                        prevLongNoteHitTime = GameManager.Instance.noteSpace.elapsedMilliSeconds;
+                        OnHitNote?.Invoke( note.noteInfo, HitInfo.EHitRate.DUMMY );
+                    }
+                }
             }
 
             break;
@@ -167,6 +212,7 @@ public class Line : MonoBehaviour
 
                 if ( currentLongNote == null )
                 {
+                    // 롱노트 시작시
                     GameObject longNoteInstance = Instantiate( longNoteBodyPrefab, gameObject.transform );
                     if ( longNoteInstance == null )
                     {
@@ -181,15 +227,21 @@ public class Line : MonoBehaviour
                         return;
                     }
 
-                    longNote.noteInfo = noteInfo;
+                    longNote.noteInfo = new NoteInfo();
+                    longNote.noteInfo.LineIndex = noteInfo.LineIndex;
+                    longNote.noteInfo.WaveIndex = 0;
+                    longNote.noteInfo.NoteType = NoteInfo.ENoteType.LONG_BODY;
                     longNote.hitMiliSceconds = hitMilliSeconds;
                     longNote.targetPosition = hitLine.position;
 
                     currentLongNote = longNote;
-                    //notes.Enqueue( longNote );
+                    longNotes.Enqueue( longNote );
                 }
                 else
                 {
+                    // 롱노트 종료시
+                    note.linkedNote = currentLongNote;
+                    note.noteInfo.NoteType = NoteInfo.ENoteType.LONG_END;
                     currentLongNote.rectTransform.offsetMax = new Vector2( currentLongNote.rectTransform.offsetMax.x, note.rectTransform.position.y - currentLongNote.rectTransform.position.y );
                     currentLongNote = null;
                 }
@@ -225,16 +277,33 @@ public class Line : MonoBehaviour
             return;
         }
 
+        if ( note.linkedNote != null && note.linkedNote != note )
+        {
+            RemoveNote( note.linkedNote );
+        }
+
         note.gameObject.SetActive( false );
         Destroy( note.gameObject );
 
-        if ( notes.Count > 0 && notes.Peek() == note )
+        switch ( note.noteInfo.NoteType )
         {
-            notes.Dequeue();
-        }
-        else
-        {
-            backgrountNotes.Dequeue();
+            case NoteInfo.ENoteType.BACKGROUND:
+            {
+                backgrountNotes.Dequeue();
+            }
+            break;
+
+            case NoteInfo.ENoteType.LONG_BODY:
+            {
+                longNotes.Dequeue();
+            }
+            break;
+
+            default:
+            {
+                notes.Dequeue();
+            }
+            break;
         }
     }
 
