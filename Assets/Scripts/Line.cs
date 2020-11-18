@@ -30,7 +30,7 @@ public class Line : MonoBehaviour
     {
         hitableInterval[ ( int )HitInfo.EHitRate.PERFECT ] = 75;
         hitableInterval[ ( int )HitInfo.EHitRate.GOOD ] = 175;
-        hitableInterval[ ( int )HitInfo.EHitRate.BAD ] = 225;
+        hitableInterval[ ( int )HitInfo.EHitRate.BAD ] = 250;
     }
 
     private void Start()
@@ -256,7 +256,7 @@ public class Line : MonoBehaviour
         }
     }
 
-    public void Reset()
+    public void Clear()
     {
         while ( notes.Count > 0 )
         {

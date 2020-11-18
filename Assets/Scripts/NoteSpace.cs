@@ -157,7 +157,7 @@ public class NoteSpace : MonoBehaviour
     {
         foreach ( Line line in lines )
         {
-            line.Reset();
+            line.Clear();
         }
 
         CurrentScore = 0;
@@ -223,7 +223,7 @@ public class NoteSpace : MonoBehaviour
     {
         foreach ( Line line in lines )
         {
-            line.Reset();
+            line.Clear();
         }
 
         stopWatch.Reset();
