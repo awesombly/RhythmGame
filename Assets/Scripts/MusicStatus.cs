@@ -18,6 +18,12 @@ public class MusicStatus : MonoBehaviour
             noteSpeed = value;
             // 노트 생성시 1박자후 HitLine에 도착
             noteDelayBit = ( int )( DividePerNode / noteSpeed );
+
+            if ( statusUI.NoteSpeed != null )
+            {
+                string speed = noteSpeed.ToString();
+                statusUI.NoteSpeed.text = speed.Substring( 0, Math.Min( speed.Length, 3 ) );
+            }
         }
     }
     [HideInInspector]
@@ -180,6 +186,8 @@ public class MusicStatus : MonoBehaviour
     [Serializable]
     public struct StatusUI
     {
+        public UnityEngine.UI.Text NoteSpeed;
+
         public UnityEngine.UI.Text Genre;
         public UnityEngine.UI.Text Title;
         public UnityEngine.UI.Text Artist;
@@ -237,7 +245,6 @@ public class MusicStatus : MonoBehaviour
     private void Start()
     {
         GameManager.Instance.musicList.OnSelectMusic += OnSelectMusic;
-        NoteSpeed = 1.0f;
     }
 
     private void Update()
