@@ -3,13 +3,13 @@
 
 #PLAYER 1
 #GENRE Epic Dance
-#TITLE Butterfly shade (7-NM)
+#TITLE Butterfly shade (8Key Normal)
 #ARTIST Springhead
 #BPM 125
 #PLAYLEVEL 6
 #RANK 2
 #TOTAL 250
-#STAGEFILE 
+#STAGEFILE BS_7key_normal.bmp
 
 #WAV01 guitar_1.wav
 #WAV02 guitar_2.wav
